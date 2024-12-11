@@ -1,0 +1,36 @@
+node_modules/
+.env
+*.log
+logs/
+.DS_Store
+
+# Editor specific
+.idea/
+.vscode/
+
+# Docker specific
+*.pid
+*.swp
+coverage/
+docker-compose.override.yml
+
+# Build/Generated files
+build/
+dist/
+public/
+*.tsbuildinfo
+*.class
+
+# OS specific
+Thumbs.db
+*/~
+
+# Dependency directories
+node_modules
+bower_components
+
+# Logs
+*.log
+yarn-debug.log*
+yarn-error.log*
+npm-debug.log*
