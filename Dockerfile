@@ -1,22 +1,20 @@
-# Use the official Node.js image as a base image
-FROM node:latest
+# Here we are getting our node as Base image
+FROM node:20.10.0
 
-# Set the working directory inside the container
-WORKDIR /usr/src/app
+# create user in the docker image
+USER node
 
-# Copy the package.json and package-lock.json (or yarn.lock) first for caching dependencies
-COPY package*.json ./
+# Creating a new directory for app files and setting path in the container
+RUN mkdir -p /home/node/app && chown -R node:node /home/node/app
 
-RUN chown -R node:node /usr/src/app
+# setting working directory in the container
+WORKDIR /home/node/app
 
-# Install the app dependencies
+# grant permission of node project directory to node user
+COPY --chown=node:node . .
+
+# installing the dependencies into the container
 RUN npm install
 
-# Copy the rest of the application code
-COPY . .
-
-# Expose the port the app will run on
-EXPOSE 3000
-
-# Start the application
-CMD ["npm", "start"]
+# command to run within the container
+CMD [ "npm", "start" ]
