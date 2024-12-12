@@ -7,6 +7,8 @@ WORKDIR /usr/src/app
 # Copy the package.json and package-lock.json (or yarn.lock) first for caching dependencies
 COPY package*.json ./
 
+RUN chown -R node:node /usr/src/app
+
 # Install the app dependencies
 RUN npm install
 

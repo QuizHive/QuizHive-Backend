@@ -6,6 +6,7 @@ services:
     build: .
     container_name: quizhive_backend
     env_file: .env
+    user: node
     ports:
       - '$PORT:$PORT'
     depends_on:
