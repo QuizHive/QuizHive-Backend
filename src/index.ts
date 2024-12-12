@@ -1,19 +1,20 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import https from 'https';
+import * as fs from "node:fs";
 
 dotenv.config(); // Load environment variables
-
-const app = express();
 const PORT = process.env.PORT || 3000;
+const options = {
+    key: fs.readFileSync('privateKey.key'),
+    cert: fs.readFileSync('certificate.crt')
+};
+const app = express();
 
-// Middleware to parse JSON
 app.use(express.json());
 
 app.get('/', (req, res) => {
     res.send('Hello World');
 });
 
-// Start the server
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+https.createServer(options, app).listen(PORT);
