@@ -1,0 +1,39 @@
+# Node.js dependencies
+node_modules/
+
+# Build output
+/dist
+/build
+
+# Logs
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Environment variable files
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Dockerfile and docker-compose configuration for local development (if not needed inside container)
+docker-compose.override.yml
+
+# Test coverage reports
+coverage/
+
+# Package manager lock files (if you want to prevent them from being copied to the container)
+package-lock.json
+yarn.lock
+
+# TypeScript specific files (optional, if you only need compiled JS in Docker image)
+*.ts

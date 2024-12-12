@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  # Express backend service
+  backend:
+    build: .
+    container_name: quizhive_backend
+    env_file: .env
+    ports:
+      - '$PORT:$PORT'
+    depends_on:
+      - mongo
+    volumes:
+      - .:/usr/src/app
+    restart: unless-stopped
+
+  # MongoDB service
+  mongo:
+    image: mongo:latest
+    container_name: quizehive_mongo
+    env_file: .env
+    ports:
+      - "$DB_PORT:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$DB_ADMIN
+      - MONGO_INITDB_ROOT_PASSWORD=$DB_ADMIN_PWD
+      - MONGO_INITDB_DATABASE=$DB_NAME
+    volumes:
+      - mongo-data:/data/db
+    restart: unless-stopped
+
+volumes:
+  mongo-data:
+    driver: local
