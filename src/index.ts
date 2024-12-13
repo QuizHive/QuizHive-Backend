@@ -1,20 +1,43 @@
-import express from 'express';
-import dotenv from 'dotenv';
 import http from 'http';
+import app from './app';
+import config from "./config/config";
+import logger from "./utils/logger";
+import initConnection from "./utils/database";
+
+// Initiate the connection to the database
+initConnection(config.db.url, config.db.options);
+
 // import * as fs from "node:fs";
 
-dotenv.config(); // Load environment variables
-const PORT = process.env.PORT || 3000;
 // const options = {
 //     key: fs.readFileSync('privateKey.key'),
 //     cert: fs.readFileSync('certificate.crt')
 // };
-const app = express();
 
-app.use(express.json());
+const server = http.createServer(app);
 
-app.get('/', (req, res) => {
-    res.send('Hello World');
+server.listen(config.port);
+server.on('listening', () => {
+    logger.info(`Server running on PORT ${server.address()}:${config.port}`);
 });
+server.on('error', onError);
 
-http.createServer(app).listen(PORT);
+function onError(error: NodeJS.ErrnoException) {
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
+
+    const bind = 'Port ' + config.port;
+
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+        case 'EACCES':
+            logger.error(bind + ' requires elevated privileges');
+            process.exit(1);
+        case 'EADDRINUSE':
+            logger.error(bind + ' is already in use');
+            process.exit(1);
+        default:
+            throw error;
+    }
+}

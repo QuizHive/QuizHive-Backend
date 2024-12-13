@@ -14,7 +14,7 @@ WORKDIR /home/node/app
 COPY --chown=node:node . .
 
 # installing the dependencies into the container
-RUN npm install
+RUN npm i
 
 # command to run within the container
 CMD [ "npm", "start" ]
