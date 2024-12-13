@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Category from '../models/Category';
+import {Category, CategoryModel} from "../models/Question";
 
 const categoryController = {
     async createCategory(req: Request, res: Response) {
