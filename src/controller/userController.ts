@@ -33,25 +33,25 @@ const userController = {
         }
     },
 
-    async followUser(req: Request, res: Response) {
-        try {
-            const { id } = req.params;
-            await userService.followUser((req.user as any).id, ID.from(id));
-            res.json({ message: 'User followed successfully' });
-        } catch (error: any) {
-            res.status(500).json({ message: error.message });
-        }
-    },
+    // async followUser(req: Request, res: Response) {
+    //     try {
+    //         const { id } = req.params;
+    //         await userService.followUser((req.user as any).id, ID.from(id));
+    //         res.json({ message: 'User followed successfully' });
+    //     } catch (error: any) {
+    //         res.status(500).json({ message: error.message });
+    //     }
+    // },
 
-    async unfollowUser(req: Request, res: Response) {
-        try {
-            const { id } = req.params;
-            await userService.followUser((req.user as any).id, ID.from(id));
-            res.json({ message: 'User unfollowed successfully' });
-        } catch (error: any) {
-            res.status(500).json({ message: error.message });
-        }
-    }
+    // async unfollowUser(req: Request, res: Response) {
+    //     try {
+    //         const { id } = req.params;
+    //         await userService.followUser((req.user as any).id, ID.from(id));
+    //         res.json({ message: 'User unfollowed successfully' });
+    //     } catch (error: any) {
+    //         res.status(500).json({ message: error.message });
+    //     }
+    // }
 };
 
 export default userController;
