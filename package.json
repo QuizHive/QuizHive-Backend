@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "QuizHive Backend: A RESTful API for QuizHive: A Quiz App",
   "main": "dist/index.js",
-  "repository": "https://github.com/QuizHive/QuizHive-Backend",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/QuizHive/QuizHive-Backend.git"
+  },
   "scripts": {
     "dev": "ts-node src/index.ts",
     "eslint": "eslint . --ext .js,.ts",
@@ -13,6 +16,8 @@
     "start": "npm run build && node dist/index.js"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "cookie-parser": "~1.4.4",
     "express": "^4.21.2",
     "joi": "^17.13.3",
@@ -27,9 +32,12 @@
     "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.8",
     "@types/express": "^5.0.0",
     "@types/joi": "^17.2.2",
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/passport": "^1.0.17",
     "@typescript-eslint/eslint-plugin": "^8.18.0",
     "@typescript-eslint/parser": "^8.18.0",
@@ -38,5 +46,11 @@
     "express": "^4.21.2",
     "typescript": "^5.7.2"
   },
-  "private": true
+  "private": true,
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/QuizHive/QuizHive-Backend/issues"
+  },
+  "homepage": "https://github.com/QuizHive/QuizHive-Backend#readme"
 }
