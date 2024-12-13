@@ -1,15 +1,18 @@
-// import express from 'express';
-// import categoryController from '../controller/categoryController';
+import express from 'express';
+import categoryController from '../controller/categoryController';
+import validateRequest from '../middleware/validateRequest';
+import { createCategorySchema, updateCategorySchema } from '../validationSchemas/categorySchemas';
 
-// const router = express.Router();
+const router = express.Router();
 
-// // Create a new category
-// router.post('/', categoryController.createCategory);
+router.post('/', validateRequest(createCategorySchema), categoryController.createCategory);
 
-// // Get all categories
-// router.get('/', categoryController.getAllCategories);
+router.get('/', categoryController.getAllCategories);
 
-// // Get a category by ID
-// router.get('/:id', categoryController.getCategoryById);
+router.get('/:id', categoryController.getCategoryById);
 
-// export default router;
+router.put('/:id', validateRequest(updateCategorySchema), categoryController.updateCategory);
+
+router.delete('/:id', categoryController.deleteCategory);
+
+export default router;

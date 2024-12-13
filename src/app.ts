@@ -39,9 +39,10 @@
 // export default app;
 
 
-// ------ for question
+// ------ for category and question
 import express from 'express';
 import questionRoutes from './routes/questionRoutes';
+import categoryRoutes from './routes/categoryRoutes';
 
 const app = express();
 
@@ -53,5 +54,11 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/question', questionRoutes);
+app.use('/api/category', categoryRoutes);
+
+app.use((err: any, req: any, res: any, next: any) => {
+    console.error(err.stack);
+    res.status(500).send({ message: 'An internal error occurred', error: err.message });
+});
 
 export default app;
