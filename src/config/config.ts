@@ -6,11 +6,7 @@ const envVarsSchema = Joi.object()
         NODE_ENV: Joi.string().valid('production', 'development', 'test').required(),
         PORT: Joi.number().default(3000).description('Port number of Backend server'),
         LOG_DIR: Joi.string().default('./logs').description('Directory for log files'),
-        DB_HOST: Joi.string().required().description('MongoDB host url'),
-        DB_PORT: Joi.number().default(27017).description('MongoDB port'),
-        DB_NAME: Joi.string().required().description('MongoDB database name'),
-        DB_ADMIN: Joi.string().required().description('MongoDB admin user'),
-        DB_ADMIN_PWD: Joi.string().required().description('MongoDB admin password'),
+        DB_URL: Joi.string().required().description('MongoDB URL'),
         DB_MIN_POOL_SIZE: Joi.number().default(2).description('MongoDB minimum pool size'),
         DB_MAX_POOL_SIZE: Joi.number().default(5).description('MongoDB maximum pool size'),
         JWT_SECRET: Joi.string().required().description('JWT secret key'),
@@ -42,9 +38,7 @@ const config = {
     port: envVars.PORT,
     logDir: envVars.LOG_DIR,
     db: {
-        url:`mongodb://${envVars.DB_ADMIN}:${encodeURIComponent(envVars.DB_ADMIN_PWD)}@${
-            envVars.DB_HOST
-        }:${envVars.DB_PORT}/${envVars.DB_NAME}?authSource=admin`,
+        url: envVars.DB_URL,
         options: {
             autoIndex: true,
             minPoolSize: envVars.DB_MIN_POOL_SIZE,

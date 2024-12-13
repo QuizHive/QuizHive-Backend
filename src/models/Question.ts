@@ -1,31 +1,46 @@
-import mongoose, { Document, Schema } from 'mongoose';
-import { ICategory } from './Category';
+import {getModelForClass, prop, Ref} from "@typegoose/typegoose";
+import ID from "./ID";
 
-export interface IQuestion extends Document {
-    question_text: string;
-    options: string[];
-    correct: number;  // Index of the correct option
-    category: mongoose.Types.ObjectId;  // Reference to the Category model
-    solves: number;  // Number of times this question has been solved
-
-    // Instance Method
-    increaseSolves(): Promise<void>;
+export enum Difficulty {
+    Easy = 1,
+    Medium = 2,
+    Hard = 3
 }
 
-const QuestionSchema: Schema = new Schema({
-    question_text: { type: String, required: true },
-    options: { type: [String], required: true },
-    correct: { type: Number, required: true },
-    category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
-    solves: { type: Number, default: 0 },
-});
+export class Category {
+    @prop()
+    public _id!: ID;
 
-// Instance method to increase the number of solves
-QuestionSchema.methods.increaseSolves = async function (this: IQuestion) {
-    this.solves++;
-    await this.save();
-};
+    @prop()
+    public category_name!: string;
 
-const Question = mongoose.model<IQuestion>('Question', QuestionSchema);
+    @prop()
+    public description!: string;
+}
 
-export default Question;
+export const CategoryModel = getModelForClass(Category);
+
+export class Question {
+    @prop()
+    public _id!: ID;
+
+    @prop()
+    public question_text!: string;
+
+    @prop()
+    public options!: string[];
+
+    @prop()
+    public correct!: number;
+
+    @prop({ref: Category})
+    public category!: Ref<Category>;
+
+    @prop()
+    public solves!: number;
+
+    @prop()
+    public difficulty!: Difficulty;
+}
+
+export const QuestionModel = getModelForClass(Question);

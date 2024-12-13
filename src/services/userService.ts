@@ -1,41 +1,38 @@
 import bcrypt from 'bcrypt';
-import User from '../models/User';
 import config from '../config/config';
-// import ID from '../models/ID';
-// import jwtUtils from '../utils/jwt';
-import jwt from 'jsonwebtoken';
+import ID from '../models/ID';
+import jwtUtils from '../utils/jwt';
+import { Role, User, UserModel } from '../models/User';
 
 const userService = {
-    async registerUser(email: string, password: string, nickname: string, role: 'player' | 'admin') {
-        // return {user: "new salam"};
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
+    async registerUser(email: string, password: string, nickname: string, role: string) {
+        const existing = await UserModel.findOne({email});
+        if (existing)
             throw new Error('User already exists');
-        }
 
-        const passwordHash = await bcrypt.hash(password, 10);
-        const user = new User({ email, password_hash: passwordHash, nickname, role });
-        return user.save();
+        const hash_password = await bcrypt.hash(password, 10);
+        const newUser = await UserModel.create({email, hash_password, nickname, role});
+        return newUser.save();
     },
 
     async loginUser(email: string, password: string) {
         // return {'jwt': jwtUtils.generateAccessToken({id:'2', role:'admin'})};
-        const user = await User.findOne({ email });
-        if (!user || !(await bcrypt.compare(password, user.password_hash))) {
-            throw new Error('Invalid credentials');
-        }
+        // const user = await User.findOne({ email });
+        // if (!user || !(await bcrypt.compare(password, user.password_hash))) {
+        //     throw new Error('Invalid credentials');
+        // }
 
-        const token = jwt.sign({ id: user.id, role: user.role }, config.jwt.secret, { expiresIn: '1h' });
-        return token;
+        // const token = jwt.sign({ id: user.id, role: user.role }, config.jwt.secret, { expiresIn: '1h' });
+        // return token;
     },
 
     async getUserProfile(userId: string) {
-        const user = await User.findById(userId).populate(['followers', 'followings']);
-        if (!user) {
-            throw new Error('User not found');
-        }
+        // const user = await User.findById(userId).populate(['followers', 'followings']);
+        // if (!user) {
+        //     throw new Error('User not found');
+        // }
 
-        return user.getUserInfo();
+        // return user.getUserInfo();
     },
 
     // async followUser(userId: ID, targetUserId: ID) {
