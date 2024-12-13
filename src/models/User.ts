@@ -1,93 +1,96 @@
-import mongoose, { Document, Schema } from 'mongoose';
-import Question, {IQuestion} from "./Question";
+import {prop, getModelForClass, Ref} from "@typegoose/typegoose";
+import ID from "./ID";
+import {Question} from "./Question";
 
-export interface IUserInfo {
-    id: IUser['_id'];
-    email: string;
-    nickname: string;
-    role: 'player' | 'admin';
-    score: number;
+export enum Role {
+    Player = 'player',
+    Admin = 'admin'
 }
 
-export interface IUser extends Document {
+export interface UserInfo {
+    id: string;
     email: string;
-    password_hash: string;
-    nickname: string;
-    role: 'player' | 'admin';
-    followers: IUser['_id'][];
-    followings: IUser['_id'][];
-    solved_questions: IQuestion['_id'][];
-    score: number;
-
-    // Instance Methods
-    follow(targetUserId: mongoose.Types.ObjectId): Promise<void>;
-    unfollow(targetUserId: mongoose.Types.ObjectId): Promise<void>;
-    solveQuestion(questionId: mongoose.Types.ObjectId): Promise<void>;
-    getUserInfo(): IUserInfo;
+    nickname?: string;
+    role: Role;
+    score?: number;
 }
 
-const UserSchema: Schema = new Schema({
-    email: { type: String, required: true, unique: true },
-    password_hash: { type: String, required: true },
-    nickname: { type: String, required: true },
-    role: { type: String, enum: ['player', 'admin'], required: true },
-    followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    followings: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    solved_questions: [{ type: Schema.Types.ObjectId, ref: 'Question' }],
-    score: { type: Number, default: 0 },
-});
+export class User {
+    public _id!: ID
 
-// Instance method to follow a user
-UserSchema.methods.follow = async function (this: IUser, targetUserId: mongoose.Types.ObjectId) {
-    if (this.followings.includes(targetUserId))
-        throw new Error('Already following this user');
+    @prop()
+    public email!: string;
 
-    // Add this user's ID to target user's followers
-    const targetUser = await User.findById(targetUserId);
-    if (!targetUser) throw new Error('Target user not found');
+    @prop()
+    public password_hash!: string;
 
-    // Add targetUserId to followings
-    this.followings.push(targetUserId);
+    @prop()
+    public nickname?: string;
 
-    // Add this user's ID to target user's followers
-    targetUser.followers.push(this.id);
+    @prop()
+    public role!: Role;
 
-    await this.save();
-    await targetUser.save();
-};
+    @prop({ref: User})
+    public followers?: Ref<User>[];
 
-// Instance method to unfollow a user
-UserSchema.methods.unfollow = async function (this: IUser, targetUserId: mongoose.Types.ObjectId) {
-    if (!this.followings.includes(targetUserId))
-        throw new Error('Not following this user');
+    @prop({ref: User})
+    public followings?: Ref<User>[];
 
-    // Remove this user's ID from target user's followers
-    const targetUser = await User.findById(targetUserId);
-    if (!targetUser) throw new Error('Target user not found');
+    @prop({ref: Question})
+    public solved_questions?: Ref<Question>[];
 
-    // Remove targetUserId from followings
-    this.followings = this.followings.filter((id) => id !== targetUserId);
-    // Remove this user's ID from target user's followers
-    targetUser.followers = targetUser.followers.filter((id) => id !== this._id);
+    @prop()
+    public score?: number;
 
-    await this.save();
-    await targetUser.save();
-};
+    public async follow(target: ID) {
+        // if (this.followings?.find((ref) => target.equals(ref.id)))
+        //     throw new Error('Already following this user');
+        // // Add this user's ID to target user's followers
+        // const targetUser = await User.findById(target.toObjectId());
+        // if (!targetUser) throw new Error('Target user not found');
+        // // Add targetUserId to followings
+        // this.followings.push(targetUser);
+        // // Add this user's ID to target user's followers
+        // targetUser.followers.push(this);
+        // await this.save();
+        // await targetUser.save();
+    }
 
-// Instance method to solve a question
-UserSchema.methods.solveQuestion = async function (this: IUser, questionId: mongoose.Types.ObjectId) {
-    if (this.solved_questions.includes(questionId))
-        throw new Error('Question already solved');
+    public async unfollow(target: ID) {
+        // if (!this.followings.includes(targetUserId))
+        //     throw new Error('Not following this user');
+        // // Remove this user's ID from target user's followers
+        // const targetUser = await User.findById(targetUserId);
+        // if (!targetUser) throw new Error('Target user not found');
+        // // Remove targetUserId from followings
+        // this.followings = this.followings.filter((id) => id !== targetUserId);
+        // // Remove this user's ID from target user's followers
+        // targetUser.followers = targetUser.followers.filter((id) => id !== this._id);
+        // await this.save();
+        // await targetUser.save();
+    }
 
-    // Add questionId to solved_questions
-    this.solved_questions.push(questionId);
+    public async solveQuestion(questionId: ID) {
+        // if (this.solved_questions.includes(questionId))
+        //     throw new Error('Question already solved');
+        // // Add questionId to solved_questions
+        // this.solved_questions.push(questionId);
+        //
+        // // Increase score by 1
+        // // this.score += Question.findById(questionId).correct === 1 ? 1 : 0;
+        //
+        // await this.save();
+    }
 
-    // Increase score by 1
-    // this.score += Question.findById(questionId).correct === 1 ? 1 : 0;
+    public getUserInfo(): UserInfo {
+        return {
+            id: this._id.toString(),
+            email: this.email,
+            nickname: this.nickname,
+            role: this.role,
+            score: this.score,
+        };
+    }
+}
 
-    await this.save();
-};
-
-const User = mongoose.model<IUser>('User', UserSchema);
-
-export default User;
+export const UserModel = getModelForClass(User);

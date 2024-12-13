@@ -2,25 +2,26 @@ import http from 'http';
 import app from './app';
 import config from "./config/config";
 import logger from "./utils/logger";
-import initConnection from "./utils/database";
+import initDBConnection from "./utils/database";
 
 // Initiate the connection to the database
-initConnection(config.db.url, config.db.options);
-
-// import * as fs from "node:fs";
+initDBConnection(config.db.url, config.db.options).then(r => {
+    // import * as fs from "node:fs";
 
 // const options = {
 //     key: fs.readFileSync('privateKey.key'),
 //     cert: fs.readFileSync('certificate.crt')
 // };
 
-const server = http.createServer(app);
+    const server = http.createServer(app);
 
-server.listen(config.port);
-server.on('listening', () => {
-    logger.info(`Server running on PORT ${server.address()}:${config.port}`);
+    server.listen(config.port);
+    server.on('listening', () => {
+        logger.info(`Server running on PORT ${server.address()}:${config.port}`);
+    });
+    server.on('error', onError);
+
 });
-server.on('error', onError);
 
 function onError(error: NodeJS.ErrnoException) {
     if (error.syscall !== 'listen') {

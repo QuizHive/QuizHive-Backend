@@ -17,15 +17,10 @@ services:
 
   # MongoDB service
   mongo:
-    image: mongo:latest
     container_name: quizehive_mongo
-    env_file: .env
+    image: mongo
     ports:
-      - "$DB_PORT:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=$DB_ADMIN
-      - MONGO_INITDB_ROOT_PASSWORD=$DB_ADMIN_PWD
-      - MONGO_INITDB_DATABASE=$DB_NAME
+      - "127.0.0.1:$DB_PORT:27017"
     volumes:
       - mongo-data:/data/db
     restart: unless-stopped

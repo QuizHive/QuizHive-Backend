@@ -4,9 +4,8 @@ export default class ID {
     private readonly value: string;
 
     constructor(id: string) {
-        if (!ID.isValid(id)) {
+        if (!ID.isValid(id))
             throw new Error(`Invalid ID: ${id}`);
-        }
         this.value = id;
     }
 
@@ -28,5 +27,10 @@ export default class ID {
     // Return the value as a MongoDB ObjectId (if needed for Mongoose queries)
     toObjectId(): mongoose.Types.ObjectId {
         return new mongoose.Types.ObjectId(this.value);
+    }
+
+    // Compare two ID instances
+    equals(other: ID): boolean {
+        return this.value === other.value;
     }
 }
