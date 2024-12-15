@@ -1,64 +1,31 @@
-// import express from "express";
+import express from "express";
 
-// const app = express();
-
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
-
-// app.get('/', (req, res) => {
-//     res.send('Hello World');
-// });
-// // app.use(passport.initialize());
-// // passport.use('jwt', jwtStrategy);
-
-// export default app;
-
-
-
-
-// ------------- for user:
-
-// import express from "express";
-// import userRoutes from './routes/userRoutes';
-// // import questionRoutes from './routes/questionRoutes';
-// // import categoryRoutes from './routes/categoryRoutes';
-
-// const app = express();
-
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
-
-// app.get('/', (req, res) => {
-//     res.send('Welcome to QuizHive API!');
-// });
-
-// app.use('/api/user', userRoutes);
-// // app.use('/api/questions', questionRoutes);
-// // app.use('/api/categories', categoryRoutes);
-
-// export default app;
-
-
-// ------ for category and question
-import express from 'express';
-import questionRoutes from './routes/questionRoutes';
-import categoryRoutes from './routes/categoryRoutes';
+import path from "path";
+import config from "./config/config";
+import routesV1 from "./routes/v1/index";
+import logger from "./utils/logger";
+import authLimiter from "./utils/ratelimiter";
 
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({extended: true}));
 
-app.get('/', (req, res) => {
-    res.send('Welcome to QuizHive API');
+app.get("/", (_req, res) => {
+    res.send("Welcome to QuizHive API. Please refer to the documentation for proper usage");
 });
 
-app.use('/api/question', questionRoutes);
-app.use('/api/category', categoryRoutes);
+// limit repeated failed requests to auth endpoints
+if (config.env === "production") {
+    app.use("/api/v1/auth", authLimiter);
+}
 
-app.use((err: any, req: any, res: any, next: any) => {
-    console.error(err.stack);
-    res.status(500).send({ message: 'An internal error occurred', error: err.message });
+app.use("/api/v1/", routesV1);
+app.use("/docs", express.static(path.join(__dirname, "./assets/swagger")));
+
+app.use((err: any, _req: any, res: any) => {
+    logger.error(err.stack);
+    res.status(500).send({message: "An internal error occurred", error: err.message});
 });
 
 export default app;

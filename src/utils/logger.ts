@@ -1,12 +1,12 @@
-import {createLogger, transports, format} from 'winston';
+import {createLogger, format, transports} from "winston";
 const {combine, timestamp, printf, colorize, errors} = format;
-import fs from 'fs';
-import path from 'path';
-import DailyRotateFile from 'winston-daily-rotate-file';
+import fs from "fs";
+import path from "path";
+import DailyRotateFile from "winston-daily-rotate-file";
 import config from "../config/config";
 
 let dir = config.logDir;
-if (!dir) dir = path.resolve('logs');
+if (!dir) dir = path.resolve("logs");
 
 // create directory if it is not present
 if (!fs.existsSync(dir)) {
@@ -14,16 +14,16 @@ if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir);
 }
 
-const logLevel = config.env === 'development' ? 'debug' : 'warn';
+const logLevel = config.env === "development" ? "debug" : "warn";
 
 const dailyRotateFile = new DailyRotateFile({
     level: logLevel,
-    filename: dir + '/%DATE%.log',
-    datePattern: 'YYYY-MM-DD',
+    filename: dir + "/%DATE%.log",
+    datePattern: "YYYY-MM-DD",
     zippedArchive: true,
     handleExceptions: true,
-    maxSize: '20m',
-    maxFiles: '14d',
+    maxSize: "20m",
+    maxFiles: "14d",
     format: combine(
         errors({stack: true}),
         timestamp(),
@@ -41,9 +41,9 @@ export default createLogger({
             level: logLevel,
             format: combine(
                 colorize(),
-                timestamp({format: 'YYYY-MM-DD HH:mm:ss'}),
+                timestamp({format: "YYYY-MM-DD HH:mm:ss"}),
                 errors({stack: true}),
-                logFormat
+                logFormat,
             ),
         }),
         dailyRotateFile,

@@ -4,15 +4,14 @@ import ID from "./ID";
 export enum Difficulty {
     Easy = 1,
     Medium = 2,
-    Hard = 3
+    Hard = 3,
 }
 
 export class Category {
-    @prop()
     public _id!: ID;
 
     @prop()
-    public category_name!: string;
+    public categoryName!: string;
 
     @prop()
     public description!: string;
@@ -21,11 +20,10 @@ export class Category {
 export const CategoryModel = getModelForClass(Category);
 
 export class Question {
-    @prop()
     public _id!: ID;
 
     @prop()
-    public question_text!: string;
+    public questionText!: string;
 
     @prop()
     public options!: string[];

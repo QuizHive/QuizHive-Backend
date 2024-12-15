@@ -1,13 +1,9 @@
-import {prop, getModelForClass, Ref} from "@typegoose/typegoose";
+import {getModelForClass, prop, Ref} from "@typegoose/typegoose";
+import { Role } from "../config/roles";
 import ID from "./ID";
 import {Question} from "./Question";
 
-export enum Role {
-    Player = 'player',
-    Admin = 'admin'
-}
-
-export interface UserInfo {
+export interface IUserInfo {
     id: string;
     email: string;
     nickname?: string;
@@ -16,13 +12,14 @@ export interface UserInfo {
 }
 
 export class User {
-    public _id!: ID
+    // tslint:disable-next-line:variable-name
+    public _id!: ID;
 
     @prop()
     public email!: string;
 
     @prop()
-    public password_hash!: string;
+    public passHash!: string;
 
     @prop()
     public nickname?: string;
@@ -31,13 +28,13 @@ export class User {
     public role!: Role;
 
     @prop({ref: User})
-    public followers?: Ref<User>[];
+    public followers?: Array<Ref<User>>;
 
     @prop({ref: User})
-    public followings?: Ref<User>[];
+    public followings?: Array<Ref<User>>;
 
     @prop({ref: Question})
-    public solved_questions?: Ref<Question>[];
+    public solvedQuestions?: Array<Ref<Question>>;
 
     @prop()
     public score?: number;
@@ -82,10 +79,10 @@ export class User {
         // await this.save();
     }
 
-    public getUserInfo(): UserInfo {
+    public getUserInfo(): IUserInfo {
         return {
-            id: this._id.toString(),
             email: this.email,
+            id: this._id.toString(),
             nickname: this.nickname,
             role: this.role,
             score: this.score,
