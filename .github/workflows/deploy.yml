@@ -23,7 +23,7 @@ jobs:
 
           # Clone the repository if it doesn't exist
           if [ ! -d "$REMOTE_PRJ_DIR" ]; then
-            git clone -b deploy git@github.com:${{ github.repository }}.git $REMOTE_PRJ_DIR
+            git clone -b deploy git@github.com/${{ github.repository }}.git $REMOTE_PRJ_DIR
           fi
         
           cd $REMOTE_PRJ_DIR
