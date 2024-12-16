@@ -10,32 +10,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Deploy to Server
-      uses: appleboy/ssh-action@v1.1.0
-      with:
-        host: ${{ vars.SERVER_IP }}
-        username: ${{ vars.SERVER_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        # passphrase: ${{ secrets.SSH_PASSPHRASE }}
-        script: |
-          # Set the project directory from an environment variable
-          REMOTE_PRJ_DIR="${{ github.repository }}"
-
-          # Clone the repository if it doesn't exist
-          if [ ! -d "$REMOTE_PRJ_DIR" ]; then
-            git clone -b deploy git@github.com:${{ github.repository }}.git $REMOTE_PRJ_DIR
-          fi
-        
-          cd $REMOTE_PRJ_DIR
-
-          # Pull latest changes from the main branch
-          git checkout deploy
-          git pull origin deploy
-
-          # Update the .env file from the GitHub secret
-          echo "${{ vars.ENV_FILE }}" > .env
-
-          # Run Docker Compose
-          echo "Running Docker Compose..."
-          docker-compose down
-          docker-compose up --build -d
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ vars.SERVER_IP }}
+          username: ${{ vars.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          # passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          script: |
+            # Set the project directory from an environment variable
+            REMOTE_PRJ_DIR="${{ github.repository }}"
+            
+            # Clone the repository if it doesn't exist
+            if [ ! -d "$REMOTE_PRJ_DIR" ]; then
+              git clone -b deploy git@github.com:${{ github.repository }}.git $REMOTE_PRJ_DIR
+            fi
+            
+            cd $REMOTE_PRJ_DIR
+            
+            # Pull latest changes from the main branch
+            git checkout deploy
+            git pull origin deploy
+            
+            # Update the .env file from the GitHub secret
+            echo "${{ vars.ENV_FILE }}" > .env
+            
+            npm i
+            
+            # Run Docker Compose
+            echo "Running Docker Compose..."
+            docker-compose down
+            docker-compose up --build -d
