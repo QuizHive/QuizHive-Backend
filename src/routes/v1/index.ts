@@ -1,7 +1,8 @@
 import express, { Router } from "express";
+import swaggerUi from "swagger-ui-express";
 import config from "../../config/config";
 import authRoute from "./authRoutes";
-import {APIDocsRouter} from "./swagger";
+import {swaggerUISetup} from "./swagger";
 import userRoute from "./userRoutes";
 
 const router = express.Router();
@@ -20,10 +21,6 @@ const defaultIRoute: IRoute[] = [
     path: "/users",
     route: userRoute,
   },
-  {
-    path: "/docs",
-    route: new APIDocsRouter().getRouter(),
-  },
 ];
 
 const devIRoute: IRoute[] = [
@@ -39,5 +36,7 @@ if (config.env === "development") {
     router.use(route.path, route.route);
   });
 }
+
+router.use("/docs", swaggerUi.serve, swaggerUISetup());
 
 export default router;

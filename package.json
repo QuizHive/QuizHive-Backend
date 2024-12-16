@@ -5,13 +5,13 @@
   "main": "dist/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/QuizHive/QuizHive-Backend.git"
+    "url": "https://github.com/QuizHive/QuizHive-Backend.git"
   },
   "scripts": {
     "dev": "ts-node src/index.ts",
     "eslint": "eslint . --ext .js,.ts",
     "clean": "rm -rf ./dist",
-    "build-ts": "tsc",
+    "build-ts": "tsc && ncp src/assets dist/assets",
     "build": "npm run clean && npm run build-ts",
     "start": "npm run build && node dist/index.js"
   },
@@ -31,6 +31,8 @@
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^8.0.0",
     "swagger-jsdoc": "^6.2.8",
+    "swagger-themes": "^1.4.3",
+    "swagger-ui-express": "^5.0.1",
     "typescript": "^5.7.2",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0"
@@ -46,14 +48,16 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/passport": "^1.0.17",
     "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.7",
     "@typescript-eslint/eslint-plugin": "^8.18.0",
     "@typescript-eslint/parser": "^8.18.0",
     "dotenv": "^16.4.7",
-    "tslint": "^5.11.0",
     "eslint": "^9.16.0",
     "express": "^4.21.2",
     "jest": "^29.7.0",
+    "ncp": "^2.0.0",
     "ts-jest": "^29.2.5",
+    "tslint": "^5.11.0",
     "typescript": "^5.7.2"
   },
   "private": true,

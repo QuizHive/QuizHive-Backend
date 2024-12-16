@@ -34,10 +34,10 @@ const jwtUtils = {
 
     // Verify a token and return the id string
     verifyToken(token: string, type: "refresh" | "access"): string {
-        if (jwtUtils.isTokenExpired(token))
-            throw new UnauthorizedError("Token has expired");
         const payload = jwt.verify(token, config.jwt.secret) as JwtPayload;
         if (!payload) throw new UnauthorizedError("Invalid token payload");
+        if (jwtUtils.isTokenExpired(token))
+            throw new UnauthorizedError("Token has expired");
         if (payload.type !== type)
             throw new UnauthorizedError("Invalid token type");
         return payload.id;
@@ -64,8 +64,6 @@ const jwtUtils = {
 
     // Verify and refresh an access token using a refresh token
     refreshAccessToken(refreshToken: string): string {
-        if (jwtUtils.isTokenExpired(refreshToken))
-            throw new ForbiddenError("Refresh token has expired");
         try {
             const id = jwtUtils.verifyToken(refreshToken, "refresh");
             return jwtUtils.generateAccessToken(id);

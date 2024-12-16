@@ -13,8 +13,7 @@ const authService = {
 
     async loginUser(email: string, passHash: string) {
         const user = await UserModel.findOne({email});
-        if (!user) throw new NotFoundError("User not found");
-        if (user.passHash !== passHash) throw new UnauthorizedError("Invalid password");
+        if (!user || user.passHash !== passHash) throw new UnauthorizedError("Invalid credentials");
         const rToken = jwtUtils.generateRefreshToken(user.id);
         const aToken = jwtUtils.generateAccessToken(user.id);
         return {rToken, aToken};

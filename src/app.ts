@@ -1,14 +1,14 @@
 import express from "express";
 
-import path from "path";
 import config from "./config/config";
+import {json} from "./middleware/validator";
 import routesV1 from "./routes/v1/index";
-import logger from "./utils/logger";
+import {errorHandler, NotFoundError} from "./utils/errors";
 import authLimiter from "./utils/ratelimiter";
 
 const app = express();
 
-app.use(express.json());
+app.use(json);
 app.use(express.urlencoded({extended: true}));
 
 app.get("/", (_req, res) => {
@@ -21,11 +21,7 @@ if (config.env === "production") {
 }
 
 app.use("/api/v1/", routesV1);
-app.use("/docs", express.static(path.join(__dirname, "./assets/swagger")));
-
-app.use((err: any, _req: any, res: any) => {
-    logger.error(err.stack);
-    res.status(500).send({message: "An internal error occurred", error: err.message});
-});
+app.use((_req, _res, next) => next(new NotFoundError()));
+app.use(errorHandler);
 
 export default app;

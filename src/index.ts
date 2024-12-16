@@ -19,6 +19,8 @@ initDBConnection(config.db.url, config.db.options).then((r) => {
         logger.info(`Server running on PORT ${server.address()}:${config.port}`);
     });
     server.on("error", onError);
+}).catch((err) => {
+    logger.error(`Error connecting to the database: ${err}`);
 });
 
 function onError(error: NodeJS.ErrnoException) {
