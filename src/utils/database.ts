@@ -5,32 +5,48 @@ export default async function initConnection(url: string, options: mongoose.Conn
     const connectWithRetry = async () => {
         try {
             await mongoose.connect(url, options);
-            logger.info("Connected to MongoDB");
+            logger.info("✅ Connected to MongoDB");
         } catch (err) {
-            logger.error(`MongoDB connection error: ${err}`);
-            setTimeout(connectWithRetry, 5000); // Retry after 5 seconds
+            logger.error(`❌ MongoDB connection error: ${err}`);
+            if (process.env.NODE_ENV !== "test") {
+                setTimeout(connectWithRetry, 5000); // Retry only in production
+            } else {
+                throw err; // Fail fast during tests
+            }
         }
     };
 
     await connectWithRetry();
 
     mongoose.connection.on("error", (err) => {
-        logger.error(`MongoDB connection error: ${err}`);
-        process.exit(1);
+        logger.error(`❌ MongoDB connection error: ${err}`);
+        if (process.env.NODE_ENV !== "test") {
+            process.exit(1);
+        }
     });
+
     mongoose.connection.on("disconnected", () => {
-        logger.info("MongoDB disconnected");
-        process.exit(1);
+        logger.info("⚠️ MongoDB disconnected");
+        if (process.env.NODE_ENV !== "test") {
+            process.exit(1);
+        }
     });
+
     mongoose.connection.on("reconnected", () => {
-        logger.info("MongoDB reconnected");
+        logger.info("✅ MongoDB reconnected");
     });
+
     mongoose.connection.on("reconnectFailed", () => {
-        logger.error("MongoDB reconnect failed");
-        process.exit(1);
+        logger.error("❌ MongoDB reconnect failed");
+        if (process.env.NODE_ENV !== "test") {
+            process.exit(1);
+        }
     });
+
+    // Clean up connection on SIGINT
     process.on("SIGINT", async () => {
         await mongoose.connection.close();
+        logger.info("MongoDB connection closed due to app termination");
         process.exit(0);
     });
 }

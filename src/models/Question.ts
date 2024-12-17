@@ -10,7 +10,7 @@ export enum Difficulty {
 export class Category {
     public _id!: ID;
 
-    @prop()
+    @prop({ required: true })
     public categoryName!: string;
 
     @prop()
@@ -25,7 +25,7 @@ export class Question {
     @prop()
     public questionText!: string;
 
-    @prop()
+    @prop({ type: () => [String], required: true })
     public options!: string[];
 
     @prop()
