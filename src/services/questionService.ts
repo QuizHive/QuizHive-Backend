@@ -1,6 +1,5 @@
-import { QuestionModel } from "../models/Question";
-import { CategoryModel } from "../models/Question";
-import { NotFoundError, ConflictError, BadRequestError } from "../utils/errors";
+import {CategoryModel, QuestionModel} from "../models/Question";
+import {BadRequestError, ConflictError, NotFoundError} from "../utils/errors";
 
 interface CreateQuestionInput {
     questionText: string;
@@ -30,11 +29,10 @@ const questionService = {
         }
 
         // Create and save the category
-        const category = await CategoryModel.create({
+        return await CategoryModel.create({
             categoryName,
             description,
         });
-        return category;
     },
 
     /**
@@ -68,7 +66,7 @@ const questionService = {
         }
 
         // Create and save the question
-        const question = await QuestionModel.create({
+        return await QuestionModel.create({
             questionText,
             options,
             correct,
@@ -76,7 +74,6 @@ const questionService = {
             difficulty,
             solves: 0, // Initialize solves count
         });
-        return question;
     },
 
     /**
@@ -94,7 +91,7 @@ const questionService = {
         }
 
         // Retrieve questions and populate the category reference
-        return await QuestionModel.find(query).populate("category");
+        return QuestionModel.find(query).populate("category");
     },
 
     /**
@@ -137,7 +134,7 @@ const questionService = {
         Object.assign(question, updates);
         await question.save();
 
-        return await QuestionModel.findById(questionId).populate("category");
+        return QuestionModel.findById(questionId).populate("category");
     },
 
     /**

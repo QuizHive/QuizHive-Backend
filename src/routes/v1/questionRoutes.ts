@@ -1,10 +1,10 @@
 import express from "express";
-import questionController from "../../controller/questionController";
-import validator from "../../middleware/validator";
-import { createCategorySchema, createQuestionSchema } from "../../routes/v1/schemas/questionSchemas";
-import requireAuth from "../../middleware/authMiddleware";
-import { combineAuthorization } from "../../middleware/combineAuthorization";
 import { Right } from "../../config/roles";
+import questionController from "../../controller/questionController";
+import requireAuth from "../../middleware/authMiddleware";
+import { combineMiddlewares } from "../../middleware/combineMiddlewares";
+import validator from "../../middleware/validator";
+import { createCategorySchema, createQuestionSchema } from "./schemas/questionSchemas";
 
 const router = express.Router();
 
@@ -32,6 +32,7 @@ const router = express.Router();
  *     responses:
  *       201:
  *         description: Category created successfully
+ *
  *       400:
  *         description: Bad request
  *       401:
@@ -41,11 +42,11 @@ const router = express.Router();
  */
 router.post(
     "/categories",
-    combineAuthorization(
+    combineMiddlewares(
         requireAuth([Right.Manage]),
-        validator(createCategorySchema)
+        validator(createCategorySchema),
     ),
-    questionController.createCategory
+    questionController.createCategory,
 );
 
 /**
@@ -74,7 +75,7 @@ router.post(
  */
 router.post(
     "/",
-    combineAuthorization(
+    combineMiddlewares(
         requireAuth([Right.Manage]),
         validator(createQuestionSchema)
     ),

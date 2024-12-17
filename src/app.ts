@@ -3,7 +3,6 @@ import express from "express";
 import config from "./config/config";
 import {json} from "./middleware/validator";
 import routesV1 from "./routes/v1/index";
-import questionRoutes from "./routes/v1/questionRoutes";
 import {errorHandler, NotFoundError} from "./utils/errors";
 import authLimiter from "./utils/ratelimiter";
 
@@ -22,7 +21,6 @@ if (config.env === "production") {
 }
 
 app.use("/api/v1/", routesV1);
-app.use("/api/v1/questions", questionRoutes);
 app.use((_req, _res, next) => next(new NotFoundError()));
 app.use(errorHandler);
 

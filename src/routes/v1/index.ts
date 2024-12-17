@@ -4,6 +4,7 @@ import config from "../../config/config";
 import authRoute from "./authRoutes";
 import {swaggerUISetup} from "./swagger";
 import userRoute from "./userRoutes";
+import questionRoutes from "./questionRoutes";
 
 const router = express.Router();
 
@@ -20,6 +21,10 @@ const defaultIRoute: IRoute[] = [
   {
     path: "/users",
     route: userRoute,
+  },
+  {
+    path: "/questions",
+    route: questionRoutes,
   },
 ];
 

@@ -4,7 +4,15 @@ import {join, resolve} from "path";
 import swaggerJSDoc from "swagger-jsdoc";
 import {SwaggerTheme, SwaggerThemeNameEnum} from "swagger-themes";
 import swaggerUi from "swagger-ui-express";
-import config from "../../config/config";
+
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *      BearerAuth:
+ *          type: http
+ *          scheme: bearer
+ */
 
 export function swaggerUISetup() {
     const options = {

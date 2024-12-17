@@ -7,7 +7,7 @@ import { NextFunction, Request, Response } from "express";
  * @param middlewares Array of middleware functions
  * @returns A single middleware function
  */
-export function combineAuthorization(
+export function combineMiddlewares(
     ...middlewares: Array<(req: Request, res: Response, next: NextFunction) => void>
 ) {
     return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
