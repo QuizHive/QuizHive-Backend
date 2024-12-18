@@ -175,5 +175,46 @@ router.delete(
     requireAuth([Right.Manage]),
     questionController.deleteCategory
 );
+/**
+ * @swagger
+ * /questions/{id}/solve:
+ *   post:
+ *     tags: [Questions]
+ *     summary: Solve a question by providing an answer index
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [answerIndex]
+ *             properties:
+ *               answerIndex:
+ *                 type: number
+ *                 description: The index of the answer selected
+ *     responses:
+ *       200:
+ *         description: Answer checked successfully
+ *       400:
+ *         description: Bad request
+ *       404:
+ *         description: Question not found
+ *       401:
+ *         description: Unauthorized
+ */
+router.post(
+    "/:id/solve",
+    combineMiddlewares(requireAuth([Right.Play])),
+    questionController.solveQuestion
+);
+
 
 export default router;

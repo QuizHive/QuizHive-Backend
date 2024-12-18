@@ -38,6 +38,15 @@ const questionController = {
         await questionService.deleteCategory(id);
         res.json({ message: "Category deleted successfully" });
     },
+
+    async solveQuestion(req: Request, res: Response) {
+        const { questionId } = req.params;
+        const { answerIndex } = req.body;
+        const userId = (req.user as any)?._id;
+
+        const result = await questionService.solveQuestion(userId, questionId, answerIndex);
+        res.json({ correct: result.correct, message: result.correct ? "Correct!" : "Wrong answer" });
+    },
 };
 
 export default questionController;
