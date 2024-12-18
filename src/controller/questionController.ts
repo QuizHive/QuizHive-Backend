@@ -1,17 +1,22 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import questionService from "../services/questionService";
+import questionService, {CreateQuestionInput} from "../services/questionService";
+import logger from "../utils/logger";
 
 const questionController = {
     async createCategory(req: Request, res: Response) {
         const { categoryName, description } = req.body;
+        logger.debug("Request: createCategory; categoryName: " + categoryName + "; description: " + description);
         const result = await questionService.createCategory(categoryName, description);
+        logger.debug("Response: createCategory; result: " + result);
         res.status(StatusCodes.CREATED).json({ message: "Category created successfully", result });
     },
 
     async createQuestion(req: Request, res: Response) {
-        const questionData = req.body;
+        const questionData = req.body as CreateQuestionInput;
+        logger.debug("Request: createQuestion; questionData: " + JSON.stringify(questionData));
         const result = await questionService.createQuestion(questionData);
+        logger.debug("Response: createQuestion; result: " + result);
         res.status(StatusCodes.CREATED).json({ message: "Question created successfully", result });
     },
 

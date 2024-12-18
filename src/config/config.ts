@@ -56,7 +56,7 @@ const config = {
     },
     env: envVars.NODE_ENV,
     jwt: {
-        accessExpirationMinutes: envVars.JWT_ACCESS_EXPIRATION_HOURS,
+        accessExpirationMinutes: envVars.JWT_ACCESS_EXPIRATION_HOURS * 60,
         cookieOptions: {
             httpOnly: true,
             secure: envVars.NODE_ENV === "production",

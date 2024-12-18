@@ -1,7 +1,7 @@
 import {CategoryModel, QuestionModel} from "../models/Question";
 import {BadRequestError, ConflictError, NotFoundError} from "../utils/errors";
 
-interface CreateQuestionInput {
+export interface CreateQuestionInput {
     questionText: string;
     options: string[];
     correct: number;
@@ -9,7 +9,7 @@ interface CreateQuestionInput {
     difficulty: number;
 }
 
-interface UpdateQuestionInput {
+export interface UpdateQuestionInput {
     questionText?: string;
     options?: string[];
     correct?: number;

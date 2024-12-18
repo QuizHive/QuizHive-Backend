@@ -1,5 +1,6 @@
 import express from "express";
 
+import cors from "cors";
 import config from "./config/config";
 import {json} from "./middleware/validator";
 import routesV1 from "./routes/v1/index";
@@ -8,6 +9,7 @@ import authLimiter from "./utils/ratelimiter";
 
 const app = express();
 
+app.use(cors());
 app.use(json);
 app.use(express.urlencoded({extended: true}));
 
