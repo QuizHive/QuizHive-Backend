@@ -10,12 +10,12 @@ services:
     depends_on:
       - mongo
     volumes:
-      - .:/usr/src/app
+      - .:/home/node/app
     restart: unless-stopped
 
   # MongoDB service
   mongo:
-    container_name: quizehive_mongo
+    container_name: quizhive_mongo
     image: mongo
     ports:
       - "127.0.0.1:$DB_PORT:27017"

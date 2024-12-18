@@ -35,9 +35,5 @@ jobs:
             # Update the .env file from the GitHub secret
             echo "${{ vars.ENV_FILE }}" > .env
             
-            npm i
-            
-            # Run Docker Compose
-            echo "Running Docker Compose..."
-            docker-compose down
-            docker-compose up --build -d
+            # Run deploy hook (npm install, docker compose down, docker compose up)
+            npm run deploy

@@ -15,7 +15,10 @@
     "clean": "rm -rf ./dist",
     "build-ts": "tsc && ncp src/assets dist/assets",
     "build": "npm run clean && npm run build-ts",
-    "start": "npm run build && node dist/index.js"
+    "start": "npm run build && node dist/index.js",
+    "launch": "docker compose up --build -d",
+    "down": "docker compose down",
+    "deploy": "npm i && npm run down && npm run launch"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
