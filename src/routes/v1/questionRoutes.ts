@@ -5,6 +5,7 @@ import requireAuth from "../../middleware/authMiddleware";
 import { combineMiddlewares } from "../../middleware/combineMiddlewares";
 import validator from "../../middleware/validator";
 import { createCategorySchema, createQuestionSchema } from "./schemas/questionSchemas";
+import noopMiddleware from "../../middleware/noopMiddleware";
 
 const router = express.Router();
 
@@ -44,6 +45,7 @@ router.post(
     "/categories",
     combineMiddlewares(
         // requireAuth([Right.Manage]),
+        noopMiddleware,
         validator(createCategorySchema),
     ),
     questionController.createCategory,
@@ -77,6 +79,7 @@ router.post(
     "/",
     combineMiddlewares(
         // requireAuth([Right.Manage]),
+        noopMiddleware,
         validator(createQuestionSchema)
     ),
     questionController.createQuestion
@@ -143,6 +146,7 @@ router.get("/:id", questionController.getQuestionById);
 router.delete(
     "/:id",
     // requireAuth([Right.Manage]),
+    noopMiddleware as any,
     questionController.deleteQuestion
 );
 
@@ -173,6 +177,7 @@ router.delete(
 router.delete(
     "/categories/:id",
     // requireAuth([Right.Manage]),
+    noopMiddleware as any,
     questionController.deleteCategory
 );
 /**
@@ -213,6 +218,7 @@ router.delete(
 router.post(
     "/:id/solve",
     // combineMiddlewares(requireAuth([Right.Play])),
+    noopMiddleware as any,
     questionController.solveQuestion
 );
 
