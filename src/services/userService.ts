@@ -1,29 +1,76 @@
-import bcrypt from 'bcrypt';
-import config from '../config/config';
-import ID from '../models/ID';
-import jwtUtils from '../utils/jwt';
+import ID from "../models/ID";
+import {UserModel} from "../models/User";
+import {IUserInfo} from "../models/User";
 
+// Interface to define user information structure
 const userService = {
-    async getUserProfile(userId: string) {
-        // const user = await User.findById(userId).populate(['followers', 'followings']);
-        // if (!user) {
-        //     throw new Error('User not found');
-        // }
-
-        // return user.getUserInfo();
+    /**
+     * @swagger
+     * components:
+     *   schemas:
+     *     SolveQuestionSchema:
+     *       type: object
+     *       required:
+     *         - questionId
+     *       properties:
+     *         questionId:
+     *           type: string
+     *           description: The ID of the question to solve
+     */
+    async getScoreById(id: string): Promise<number | null> {
+        const user = await UserModel.findById(id);
+        return user?.score || null;
     },
 
-    // async followUser(userId: ID, targetUserId: ID) {
-    //     // const user = await User.findById(userId);
-    //     // if (!user) throw new Error('User not found');
-    //     // await user.follow(targetUserId);
-    // },
+    /**
+     * @swagger
+     * components:
+     *   schemas:
+     *     UserInfo:
+     *       type: object
+     *       properties:
+     *         id:
+     *           type: string
+     *         email:
+     *           type: string
+     *         nickname:
+     *           type: string
+     *         role:
+     *           type: string
+     *           enum: [admin, player]
+     *         score:
+     *           type: integer
+     */
+    async getAllUsers(): Promise<IUserInfo[]> {
+        return UserModel.find({}, "_id email nickname role score");
+    },
 
-    // async unfollowUser(userId: string, targetUserId: string) {
-    //     // const user = await User.findById(userId);
-    //     // if (!user) throw new Error('User not found');
-    //     // await user.unfollow(targetUserId);
-    // }
+    /**
+     * @swagger
+     * components:
+     *   schemas:
+     *     SolveQuestionRequest:
+     *       type: object
+     *       required:
+     *         - questionId
+     *       properties:
+     *         questionId:
+     *           type: string
+     *           description: ID of the question to solve
+     */
+    async findById(id: string) {
+        return UserModel.findById(id);
+    },
+
+    async solveQuestion(userId: string, questionId: ID){
+        const user = await this.findById(userId);
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        await user.solveQuestion(questionId);
+        return user;
+    },
 };
 
 export default userService;

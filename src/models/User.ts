@@ -3,6 +3,7 @@ import { Role } from "../config/roles";
 import ID from "./ID";
 import {Question} from "./Question";
 
+// Interface to define user information structure
 export interface IUserInfo {
     id: string;
     email: string;
@@ -11,6 +12,7 @@ export interface IUserInfo {
     score?: number;
 }
 
+// Class representing a User entity
 export class User {
     // tslint:disable-next-line:variable-name
     public _id!: ID;
@@ -39,46 +41,37 @@ export class User {
     @prop()
     public score?: number;
 
-    public async follow(target: ID) {
-        // if (this.followings?.find((ref) => target.equals(ref.id)))
-        //     throw new Error('Already following this user');
-        // // Add this user's ID to target user's followers
-        // const targetUser = await User.findById(target.toObjectId());
-        // if (!targetUser) throw new Error('Target user not found');
-        // // Add targetUserId to followings
-        // this.followings.push(targetUser);
-        // // Add this user's ID to target user's followers
-        // targetUser.followers.push(this);
-        // await this.save();
-        // await targetUser.save();
-    }
+    /**
+     * Marks a question as solved and updates the user score.
+     * @param questionId ID of the question to solve
+     */
+    public async solveQuestion(questionId: ID): Promise<void> {
+        if (!this.solvedQuestions) {
+            this.solvedQuestions = [];
+        }
 
-    public async unfollow(target: ID) {
-        // if (!this.followings.includes(targetUserId))
-        //     throw new Error('Not following this user');
-        // // Remove this user's ID from target user's followers
-        // const targetUser = await User.findById(targetUserId);
-        // if (!targetUser) throw new Error('Target user not found');
-        // // Remove targetUserId from followings
-        // this.followings = this.followings.filter((id) => id !== targetUserId);
-        // // Remove this user's ID from target user's followers
-        // targetUser.followers = targetUser.followers.filter((id) => id !== this._id);
-        // await this.save();
-        // await targetUser.save();
-    }
+        if (this.solvedQuestions.includes(questionId as any)) {
+            throw new Error("Question already solved");
+        }
 
-    public async solveQuestion(questionId: ID) {
-        // if (this.solved_questions.includes(questionId))
-        //     throw new Error('Question already solved');
-        // // Add questionId to solved_questions
-        // this.solved_questions.push(questionId);
-        //
-        // // Increase score by 1
-        // // this.score += Question.findById(questionId).correct === 1 ? 1 : 0;
-        //
+        const question = await (Question as any).findById(questionId);
+        if (!question) {
+            throw new Error("Question not found");
+        }
+
+        this.solvedQuestions.push(questionId as any);
+
+        if (question.correct) {
+            this.score = (this.score || 0) + 1;
+        }
+
         // await this.save();
     }
 
+    /**
+     * Retrieves essential user information.
+     * @returns IUserInfo object containing user details
+     */
     public getUserInfo(): IUserInfo {
         return {
             email: this.email,
