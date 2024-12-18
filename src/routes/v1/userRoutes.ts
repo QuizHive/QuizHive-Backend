@@ -1,5 +1,5 @@
 import express from "express";
-import userController from "../../controller/userController";
+import userController from "../../controller/userController"
 import validator from "../../middleware/validator";
 import { solveQuestionSchema } from "./schemas/userSchemas";
 
@@ -74,5 +74,30 @@ router.get("/:userId/score", (userController as any).getUserScore);
  *         description: Internal server error
  */
 router.get("/all", userController.getAllUsers);
+
+/**
+ * @swagger
+ * /users/scoreboard/{userId}:
+ *   get:
+ *     summary: Retrieves the top 10 users by score with ranks
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the logged-in user
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the scoreboard
+ *       400:
+ *         description: Bad request (validation error)
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/scoreboard/:userId", (userController as any).getScoreboard);
 
 export default router;

@@ -12,6 +12,10 @@ export interface IUserInfo {
     score?: number;
 }
 
+export interface IScoreboardUser extends IUserInfo {
+    rank: number;
+}
+
 // Class representing a User entity
 export class User {
     // tslint:disable-next-line:variable-name

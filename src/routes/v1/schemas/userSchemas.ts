@@ -121,3 +121,23 @@ export const userDetailsSchema = Joi.object({
         "any.required": "Score is required.",
     }),
 });
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     ScoreboardSchema:
+ *       type: object
+ *       required:
+ *         - userId
+ *       properties:
+ *         userId:
+ *           type: string
+ *           description: ID of the logged-in user
+ */
+export const scoreboardSchema = Joi.object({
+    userId: Joi.string().required().messages({
+        "string.base": "User ID must be a string.",
+        "any.required": "User ID is required."
+    })
+});

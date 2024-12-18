@@ -1,6 +1,7 @@
 import ID from "../models/ID";
 import {UserModel} from "../models/User";
 import {IUserInfo} from "../models/User";
+import {IScoreboardUser} from "../models/User";
 
 // Interface to define user information structure
 const userService = {
@@ -70,6 +71,56 @@ const userService = {
 
         await user.solveQuestion(questionId);
         return user;
+    },
+
+    /**
+     * Retrieves the top 10 users sorted by score.
+     * If the logged-in user is not in the top 10, their rank is added after the 10th user with their actual rank.
+     * @param userId ID of the logged-in user
+     * @returns List of top 10 users and the logged-in user with rank
+     */
+    async getScoreboard(userId: string): Promise<{ scoreboard: IScoreboardUser[]; userRank?: IScoreboardUser }> {
+        const topUsers = await UserModel.find()
+            .sort({ score: -1 })
+            .limit(10)
+            .lean();
+
+        let scoreboard: IScoreboardUser[] = topUsers.map((user: any, index: number) => ({
+            id: user._id.toString(),
+            email: user.email,
+            nickname: user.nickname,
+            role: user.role,
+            score: user.score,
+            rank: index + 1,
+        }));
+
+        const loggedInUser = await UserModel.findById(userId).lean();
+        if (!loggedInUser) {
+            throw new Error("User not found");
+        }
+
+        let userRank: IScoreboardUser | undefined = undefined;
+
+        // Check if logged-in user is among the top 10
+        const userInTop10 = scoreboard.find((u) => u.id === loggedInUser._id.toString());
+
+        if (!userInTop10) {
+            const rank = await UserModel.countDocuments({ score: { $gt: loggedInUser.score || 0 } });
+            userRank = {
+                id: loggedInUser._id.toString(),
+                email: loggedInUser.email,
+                nickname: loggedInUser.nickname,
+                role: loggedInUser.role,
+                score: loggedInUser.score,
+                rank: rank + 1,
+            } as IScoreboardUser;
+            // Add the user as the 11th person with their actual rank
+            scoreboard.push({ ...userRank, rank: 11 });
+        } else {
+            userRank = userInTop10;
+        }
+
+        return { scoreboard, userRank };
     },
 };
 
