@@ -1,9 +1,14 @@
 import express from "express";
 import {Right} from "../../config/roles";
 import questionController from "../../controller/questionController";
+import submitController from "../../controller/submitController";
 import requireAuth from "../../middleware/authMiddleware";
 import validator from "../../middleware/validator";
-import {createCategorySchema, createQuestionSchema, submitAnswerSchema} from "./schemas/questionSchemas";
+import {
+    createCategorySchema,
+    createQuestionSchema,
+} from "./schemas/questionSchemas";
+import {createSubmitSchema} from "./schemas/submitSchemas";
 
 const router = express.Router();
 
@@ -318,26 +323,15 @@ router.delete("/:id", requireAuth([Right.Manage]), questionController.deleteQues
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/SubmitAnswerSchema'
+ *             $ref: '#/components/schemas/CreateSubmitSchema'
  *     responses:
  *       200:
- *         description: Answer checked successfully
+ *         description: Answer submitted successfully
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 isCorrect:
- *                   type: boolean
- *                   example: true
- *                   description: Indicates if the answer is correct
- *                 gainedScore:
- *                   type: number
- *                   example: 3
- *                   description: Score gained for the correct answer
- *                 message:
- *                   type: string
- *                   example: "Correct!"
+ *               description: Submit information
+ *               $ref: '#/components/schemas/Submit'
  *       400:
  *         description: Bad request
  *         content:
@@ -366,6 +360,61 @@ router.delete("/:id", requireAuth([Right.Manage]), questionController.deleteQues
  *             schema:
  *               $ref: '#/components/schemas/ServerErrorResponse'
  */
-router.post("/submit", requireAuth([Right.Play]), validator(submitAnswerSchema), questionController.solveQuestion);
+router.post("/submit", requireAuth([Right.Play]), validator(createSubmitSchema), submitController.submit);
+
+/**
+ * @swagger
+ * /questions/submissions:
+ *   get:
+ *     tags: [Questions]
+ *     summary:
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: questionId
+ *         schema:
+ *           $ref: '#/components/schemas/id'
+ *         required: true
+ *         description: Question ID
+ *     responses:
+ *       200:
+ *         description:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Submit'
+ *               description: List of submissions for the question
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/BadRequestResponse'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UnauthorizedErrorResponse'
+ *       404:
+ *         description: Question not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               code: 404
+ *               message: Question not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ServerErrorResponse'
+ */
+router.get("/submissions", requireAuth([]), submitController.getSubmissions);
 
 export default router;

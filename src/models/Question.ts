@@ -42,6 +42,9 @@ export class Question {
 
     @prop()
     public difficulty!: Difficulty;
+
+    @prop()
+    public createdAt!: Date;
 }
 
 export const QuestionModel = getModelForClass(Question);

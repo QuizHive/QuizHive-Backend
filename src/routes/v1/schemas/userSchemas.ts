@@ -26,6 +26,10 @@ import Joi from "joi";
  *           enum:
  *             - player
  *             - admin
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: User creation date
  */
 
 /**
@@ -38,6 +42,10 @@ import Joi from "joi";
  *         id:
  *           $ref: '#/components/schemas/id'
  *           description: User ID (Unique identifier)
+ *         rank:
+ *           type: number
+ *           description: User rank
+ *           example: 1
  *         email:
  *           type: string
  *           format: email
@@ -55,10 +63,6 @@ import Joi from "joi";
  *           enum:
  *             - player
  *             - admin
- *         rank:
- *           type: number
- *           description: User rank
- *           example: 1
  */
 
 export const getLeaderboardSchema = Joi.object({

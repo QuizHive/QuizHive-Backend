@@ -1,6 +1,5 @@
 import ID from "../models/ID";
 import {CategoryModel, Difficulty, QuestionModel} from "../models/Question";
-import {User, UserModel} from "../models/User";
 import {ConflictError, NotFoundError} from "../utils/errors";
 
 export interface CreateQuestionInput {
@@ -69,6 +68,7 @@ const questionService = {
             category: existingCategory,
             difficulty,
             solves: 0, // Initialize solves count
+            createdAt: new Date(),
         });
         return newQuestion.save();
     },
@@ -100,26 +100,6 @@ const questionService = {
         const question = await QuestionModel.findByIdAndDelete(questionId);
         if (!question) throw new NotFoundError("Question not found");
         return question;
-    },
-
-    /**
-     * Solve a question (check the answer).
-     */
-    async solveQuestion(userId: ID, questionId: ID, answerIndex: number) {
-        const question = await QuestionModel.findById(questionId);
-        const user = await UserModel.findById(userId) as User;
-        if (!question)
-            throw new NotFoundError("Question not found");
-        if (!user)
-            throw new NotFoundError("User not found");
-        const isCorrect = question.correct === answerIndex;
-        if (isCorrect) {
-            // Increment solves if the answer is correct
-            await QuestionModel.findByIdAndUpdate(questionId, {$inc: {solves: 1}});
-            // Increment user score if the answer is correct
-            await user.solveQuestion(questionId);
-        }
-        return {isCorrect, gainedScore: question.difficulty};
     },
 };
 

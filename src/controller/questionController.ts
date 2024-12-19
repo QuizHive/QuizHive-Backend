@@ -1,9 +1,7 @@
 import {Request, Response} from "express";
 import {StatusCodes} from "http-status-codes";
-import {User} from "../models/User";
 import questionService, {CreateQuestionInput} from "../services/questionService";
 import logger from "../utils/logger";
-import {child} from "winston";
 
 const questionController = {
     async getCategories(req: Request, res: Response) {
@@ -72,18 +70,6 @@ const questionController = {
             const {id} = req.params;
             await questionService.deleteQuestion(id as any);
             res.json({message: "Question deleted successfully"});
-        } catch (error: any) {
-            res.status(error.status || StatusCodes.INTERNAL_SERVER_ERROR).json({message: error.message});
-        }
-    },
-
-    async solveQuestion(req: Request, res: Response) {
-        try {
-            const {questionId} = req.params;
-            const {choice} = req.body;
-            const userId = (req.user as User)?._id;
-            const {isCorrect, gainedScore} = await questionService.solveQuestion(userId, questionId as any, choice);
-            res.json({isCorrect, gainedScore, message: isCorrect ? "Correct!" : "Wrong answer!"});
         } catch (error: any) {
             res.status(error.status || StatusCodes.INTERNAL_SERVER_ERROR).json({message: error.message});
         }

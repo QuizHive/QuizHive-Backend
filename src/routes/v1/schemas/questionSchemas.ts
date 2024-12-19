@@ -82,6 +82,7 @@ export const createCategorySchema = Joi.object({
  *           type: number
  *           minimum: 0
  *           maximum: 3
+ *           description: Index of the correct answer in the options array
  *         category:
  *           $ref: '#/components/schemas/Category'
  *         difficulty:
@@ -90,6 +91,11 @@ export const createCategorySchema = Joi.object({
  *             - 1
  *             - 2
  *             - 3
+ *           description: "Difficulty level (1: Easy, 2: Medium, 3: Hard)"
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Date and time of creation
  */
 
 /**
@@ -167,29 +173,3 @@ export const createQuestionSchema = Joi.object({
  *         result:
  *           $ref: '#/components/schemas/Question'
  */
-
-/**
- * @swagger
- * components:
- *   schemas:
- *     SubmitAnswerSchema:
- *       type: object
- *       required:
- *         - questionId
- *         - choice
- *       properties:
- *         questionId:
- *           $ref: '#/components/schemas/id'
- *         answer:
- *           type: number
- */
-export const submitAnswerSchema = Joi.object({
-    questionId: Joi.string().required().messages({
-        "any.required": "Question ID is required",
-    }),
-    choice: Joi.number().integer().min(0).max(3).required().messages({
-        "any.required": "Answer index is required",
-        "number.min": "Answer index must be between 0 and 3",
-        "number.max": "Answer index must be between 0 and 3",
-    }),
-});

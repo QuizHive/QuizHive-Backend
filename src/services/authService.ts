@@ -15,7 +15,7 @@ const authService = {
         const existing = await UserModel.findOne({email});
         if (existing)
             throw new ConflictError("User already exists");
-        const newUser = await UserModel.create({email, passHash, nickname, role, score: 0});
+        const newUser = await UserModel.create({email, passHash, nickname, role, score: 0, createdAt: new Date()});
         return newUser.save();
     },
 
@@ -42,10 +42,6 @@ const authService = {
         const aToken = jwtUtils.refreshAccessToken(rToken);
         return {aToken};
     },
-
-    // async forgotPassword(email: string) {
-    //     // Send email with password reset link
-    // },
 };
 
 export default authService;
