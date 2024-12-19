@@ -1,5 +1,7 @@
+import ID from "../models/ID";
 import {CategoryModel, QuestionModel} from "../models/Question";
 import {BadRequestError, ConflictError, NotFoundError} from "../utils/errors";
+import {User, UserModel} from "../models/User";
 
 export interface CreateQuestionInput {
     questionText: string;
@@ -18,33 +20,43 @@ export interface UpdateQuestionInput {
 }
 
 const questionService = {
+
+    /**
+     * Retrieve all categories.
+     * @returns  All categories
+     */
+    async getAllCategories() {
+        return CategoryModel.find();
+    },
+
     /**
      * Create a new category.
+     * @param title  The name of the category
+     * @param description  The description of the category
+     * @returns  The newly created category
      */
-    async createCategory(categoryName: string, description: string) {
+    async createCategory(title: string, description: string) {
         // Check for duplicate category name
-        const existingCategory = await CategoryModel.findOne({ categoryName });
-        if (existingCategory) {
-            throw new ConflictError(`Category "${categoryName}" already exists`);
-        }
-
+        const existingCategory = await CategoryModel.findOne({categoryName: title});
+        if (existingCategory)
+            throw new ConflictError(`Category "${title}" already exists`);
+        const newCategory = await CategoryModel.create({categoryName: title, description});
         // Create and save the category
-        return await CategoryModel.create({
-            categoryName,
-            description,
-        });
+        return newCategory.save();
     },
 
     /**
      * Delete a category by its ID.
+     * @param categoryId  The ID of the category
+     * @returns  The deleted category
      */
-    async deleteCategory(categoryId: string) {
+    async deleteCategory(categoryId: ID) {
         const category = await CategoryModel.findByIdAndDelete(categoryId);
-        if (!category) {
+        if (!category)
             throw new NotFoundError("Category not found");
-        }
         // Optionally: Cascade delete questions belonging to the category
-        await QuestionModel.deleteMany({ category: categoryId });
+        await QuestionModel.deleteMany({category: categoryId});
+        await CategoryModel.findByIdAndDelete(categoryId);
         return category;
     },
 
@@ -52,18 +64,10 @@ const questionService = {
      * Create a new question under a category.
      */
     async createQuestion(input: CreateQuestionInput) {
-        const { questionText, options, correct, category, difficulty } = input;
-
-        // Verify the category exists
+        const {questionText, options, correct, category, difficulty} = input;
         const existingCategory = await CategoryModel.findById(category);
-        if (!existingCategory) {
+        if (!existingCategory)
             throw new NotFoundError("Category not found");
-        }
-
-        // Validate the correct index is within the range of options
-        if (correct < 0 || correct >= options.length) {
-            throw new BadRequestError("Correct answer index is out of bounds");
-        }
 
         // Create and save the question
         return await QuestionModel.create({
@@ -97,7 +101,7 @@ const questionService = {
     /**
      * Retrieve a question by its ID.
      */
-    async getQuestionById(questionId: string) {
+    async getQuestionById(questionId: ID) {
         const question = await QuestionModel.findById(questionId).populate("category");
         if (!question) {
             throw new NotFoundError("Question not found");
@@ -108,7 +112,7 @@ const questionService = {
     /**
      * Update a question by its ID.
      */
-    async updateQuestion(questionId: string, updates: UpdateQuestionInput) {
+    async updateQuestion(questionId: ID, updates: UpdateQuestionInput) {
         const question = await QuestionModel.findById(questionId);
         if (!question) {
             throw new NotFoundError("Question not found");
@@ -140,30 +144,33 @@ const questionService = {
     /**
      * Solve a question (check the answer).
      */
-    async solveQuestion(userId: string, questionId: string, answerIndex: number) {
+    async solveQuestion(userId: ID, questionId: ID, answerIndex: number) {
         const question = await QuestionModel.findById(questionId);
-        if (!question) {
+        const user = await UserModel.findById(userId) as User;
+        if (!question)
             throw new NotFoundError("Question not found");
-        }
+        if (!user)
+            throw new NotFoundError("User not found");
 
         const isCorrect = question.correct === answerIndex;
 
         if (isCorrect) {
             // Increment solves if the answer is correct
-            await QuestionModel.findByIdAndUpdate(questionId, { $inc: { solves: 1 } });
+            await QuestionModel.findByIdAndUpdate(questionId, {$inc: {solves: 1}});
+
+            // Increment user score if the answer is correct
+            await user.solveQuestion(questionId);
         }
 
-        return { correct: isCorrect };
+        return {correct: isCorrect};
     },
 
     /**
      * Delete a question by its ID.
      */
-    async deleteQuestion(questionId: string) {
+    async deleteQuestion(questionId: ID) {
         const question = await QuestionModel.findByIdAndDelete(questionId);
-        if (!question) {
-            throw new NotFoundError("Question not found");
-        }
+        if (!question) throw new NotFoundError("Question not found");
         return question;
     },
 };

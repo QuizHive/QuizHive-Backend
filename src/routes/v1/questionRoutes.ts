@@ -1,10 +1,10 @@
 import express from "express";
-import { Right } from "../../config/roles";
+import {Right} from "../../config/roles";
 import questionController from "../../controller/questionController";
 import requireAuth from "../../middleware/authMiddleware";
-import { combineMiddlewares } from "../../middleware/combineMiddlewares";
+import {combineMiddlewares} from "../../middleware/combineMiddlewares";
 import validator from "../../middleware/validator";
-import { createCategorySchema, createQuestionSchema } from "./schemas/questionSchemas";
+import {createCategorySchema, createQuestionSchema, submitAnswerSchema} from "./schemas/questionSchemas";
 
 const router = express.Router();
 
@@ -81,6 +81,20 @@ router.post(
     ),
     questionController.createQuestion
 );
+
+/**
+ * @swagger
+ * /questions/categories:
+ *   get:
+ *     tags: [Questions]
+ *     summary: Get all categories
+ *     responses:
+ *       200:
+ *         description: List of categories
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/categories", questionController.getCategories);
 
 /**
  * @swagger
@@ -175,31 +189,21 @@ router.delete(
     requireAuth([Right.Manage]),
     questionController.deleteCategory
 );
+
 /**
  * @swagger
- * /questions/{id}/solve:
+ * /questions/submit-answer:
  *   post:
  *     tags: [Questions]
  *     summary: Solve a question by providing an answer index
  *     security:
  *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required: [answerIndex]
- *             properties:
- *               answerIndex:
- *                 type: number
- *                 description: The index of the answer selected
+ *             $ref: '#/components/schemas/SubmitAnswerSchema'
  *     responses:
  *       200:
  *         description: Answer checked successfully
@@ -211,10 +215,12 @@ router.delete(
  *         description: Unauthorized
  */
 router.post(
-    "/:id/solve",
-    combineMiddlewares(requireAuth([Right.Play])),
-    questionController.solveQuestion
+    "/submit-answer",
+    combineMiddlewares(
+        requireAuth([Right.Play]),
+        validator(submitAnswerSchema),
+    ),
+    questionController.solveQuestion,
 );
-
 
 export default router;

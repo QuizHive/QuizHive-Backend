@@ -75,13 +75,13 @@ export const registerSchema = Joi.object({
  *     RefreshTokenSchema:
  *       type: object
  *       required:
- *         - refreshToken
+ *         - rToken
  *       properties:
- *         refreshToken:
+ *         rToken:
  *           type: string
  */
 export const refreshTokenSchema = Joi.object({
-    refreshToken: Joi.string().required().messages({
+    rToken: Joi.string().required().messages({
         "any.required": "Refresh Token is required",
     }),
 });

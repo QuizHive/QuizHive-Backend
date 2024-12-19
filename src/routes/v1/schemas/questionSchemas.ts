@@ -59,6 +59,7 @@ export const createQuestionSchema = Joi.object({
         "array.min": "Options must include at least 2 items",
         "any.required": "Options are required",
     }),
+    // TODO: Validate that correct answer index is within the options array
     correct: Joi.number().integer().min(0).required().messages({
         "any.required": "Correct answer index is required",
     }),
@@ -68,5 +69,33 @@ export const createQuestionSchema = Joi.object({
     difficulty: Joi.number().integer().valid(1, 2, 3).required().messages({
         "any.only": "Difficulty must be 1 (Easy), 2 (Medium), or 3 (Hard)",
         "any.required": "Difficulty level is required",
+    }),
+});
+
+
+// SubmitAnswerSchema
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     SubmitAnswerSchema:
+ *       type: object
+ *       required:
+ *         - questionId
+ *         - answerIndex
+ *       properties:
+ *         questionId:
+ *           type: string
+ *           format: uuid
+ *         answer:
+ *           type: number
+ */
+export const submitAnswerSchema = Joi.object({
+    questionId: Joi.string().required().messages({
+        "any.required": "Question ID is required",
+    }),
+    answer: Joi.number().integer().min(0).required().messages({
+        "any.required": "Answer index is required",
     }),
 });

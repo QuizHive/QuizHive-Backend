@@ -1,15 +1,19 @@
 import {getModelForClass, prop, Ref} from "@typegoose/typegoose";
-import { Role } from "../config/roles";
+import {Role} from "../config/roles";
 import ID from "./ID";
 import {Question} from "./Question";
 
 // Interface to define user information structure
 export interface IUserInfo {
-    id: string;
+    id: ID;
     email: string;
     nickname?: string;
     role: Role;
     score?: number;
+}
+
+export interface IScoreboardUser extends IUserInfo {
+    rank: number;
 }
 
 // Class representing a User entity
@@ -46,26 +50,16 @@ export class User {
      * @param questionId ID of the question to solve
      */
     public async solveQuestion(questionId: ID): Promise<void> {
-        if (!this.solvedQuestions) {
+        if (!this.solvedQuestions)
             this.solvedQuestions = [];
-        }
-
-        if (this.solvedQuestions.includes(questionId as any)) {
+        if (this.solvedQuestions.includes(questionId as any))
             throw new Error("Question already solved");
-        }
-
         const question = await (Question as any).findById(questionId);
-        if (!question) {
+        if (!question)
             throw new Error("Question not found");
-        }
-
         this.solvedQuestions.push(questionId as any);
-
-        if (question.correct) {
+        if (question.correct)
             this.score = (this.score || 0) + 1;
-        }
-
-        // await this.save();
     }
 
     /**
@@ -75,7 +69,7 @@ export class User {
     public getUserInfo(): IUserInfo {
         return {
             email: this.email,
-            id: this._id.toString(),
+            id: this._id,
             nickname: this.nickname,
             role: this.role,
             score: this.score,

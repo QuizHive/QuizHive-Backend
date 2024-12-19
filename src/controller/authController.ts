@@ -25,8 +25,8 @@ const authController = {
 
     async refreshToken(req: Request, res: Response) {
         try {
-            const {refreshToken} = req.body;
-            const result = await authService.refreshToken(refreshToken);
+            const {rToken} = req.body;
+            const result = await authService.refreshToken(rToken);
             res.json(result);
         } catch (error: any) {
             res.status(error.status || StatusCodes.INTERNAL_SERVER_ERROR).json({message: error.message});
