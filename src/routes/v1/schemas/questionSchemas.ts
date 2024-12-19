@@ -103,7 +103,7 @@ export const createCategorySchema = Joi.object({
  *         - text
  *         - options
  *         - correct
- *         - category
+ *         - categoryId
  *         - difficulty
  *       properties:
  *         title:
@@ -120,7 +120,7 @@ export const createCategorySchema = Joi.object({
  *           type: number
  *           minimum: 0
  *           maximum: 3
- *         category:
+ *         categoryId:
  *           $ref: '#/components/schemas/id'
  *         difficulty:
  *           type: number
