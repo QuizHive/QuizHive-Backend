@@ -51,10 +51,7 @@ const router = express.Router();
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *             example:
- *               code: 500
- *               message: Internal server error
+ *               $ref: '#/components/schemas/ServerErrorResponse'
  */
 router.post("/register", validator(registerSchema), authController.register);
 
@@ -97,10 +94,7 @@ router.post("/register", validator(registerSchema), authController.register);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *             example:
- *               code: 500
- *               message: Internal server error
+ *               $ref: '#/components/schemas/ServerErrorResponse'
  */
 router.post("/login", validator(loginSchema), authController.login);
 
@@ -129,28 +123,22 @@ router.post("/login", validator(loginSchema), authController.login);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/BadRequestResponse'
- *       403:
- *         description: Forbidden - Invalid refresh token
+ *       401:
+ *         description: Unauthorized - Invalid refresh token
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               $ref: '#/components/schemas/UnauthorizedErrorResponse'
  *             example:
- *               code: 403
+ *               code: 401
  *               message: Invalid refresh token
  *       500:
  *         description: Internal server error
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *             example:
- *               code: 500
- *               message: Internal server error
+ *               $ref: '#/components/schemas/ServerErrorResponse'
  */
 router.post("/refresh-token", validator(refreshTokenSchema), authController.refreshToken);
-
-// router.post("/forget-code-request", validator(forgetReqSchema), authController.forgetPassword);
-// router.post("/reset-password", validator(resetPassSchema), authController.resetPassword);
 
 export default router;

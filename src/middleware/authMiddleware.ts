@@ -24,7 +24,7 @@ export default function requireAuth(requiredRights: Right[]) {
                 res.status(StatusCodes.UNAUTHORIZED).json({message: "User not found"});
                 return;
             }
-            logger.debug("User Found: " + user);
+            logger.debug("User Found with email: " + user.email);
             if (requiredRights.length) {
                 const hasAllRights = requiredRights.every((right) =>
                     roleRights.get(user.role)?.includes(right));

@@ -15,7 +15,7 @@ const authService = {
         const existing = await UserModel.findOne({email});
         if (existing)
             throw new ConflictError("User already exists");
-        const newUser = await UserModel.create({email, passHash, nickname, role});
+        const newUser = await UserModel.create({email, passHash, nickname, role, score: 0});
         return newUser.save();
     },
 

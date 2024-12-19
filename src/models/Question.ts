@@ -10,7 +10,7 @@ export enum Difficulty {
 export class Category {
     public _id!: ID;
 
-    @prop({ required: true })
+    @prop({required: true})
     public categoryName!: string;
 
     @prop()
@@ -22,13 +22,16 @@ export const CategoryModel = getModelForClass(Category);
 export class Question {
     public _id!: ID;
 
-    @prop()
-    public questionText!: string;
+    @prop({required: true})
+    public title!: string;
 
-    @prop({ type: () => [String], required: true })
+    @prop()
+    public text!: string;
+
+    @prop({type: () => [String], required: true})
     public options!: string[];
 
-    @prop()
+    @prop({required: true})
     public correct!: number;
 
     @prop({ref: Category})

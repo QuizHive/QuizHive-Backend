@@ -32,14 +32,6 @@ const authController = {
             res.status(error.status || StatusCodes.INTERNAL_SERVER_ERROR).json({message: error.message});
         }
     },
-
-    async forgotPassword(req: Request, res: Response) {
-
-    },
-
-    async resetPassword(req: Request, res: Response) {
-
-    },
 };
 
 export default authController;

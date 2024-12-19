@@ -7,8 +7,7 @@ import {NotFoundError} from "../utils/errors";
 const userService = {
     async getUserInfo(id: ID) {
         const user = await UserModel.findById(id);
-        if (!user)
-            throw new NotFoundError("User not found");
+        if (!user) throw new NotFoundError("User not found");
         return user.getUserInfo();
     },
 

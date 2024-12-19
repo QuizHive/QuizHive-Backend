@@ -2,6 +2,8 @@ import {getModelForClass, prop, Ref} from "@typegoose/typegoose";
 import {Role} from "../config/roles";
 import ID from "./ID";
 import {Question} from "./Question";
+import {ConflictError, NotFoundError} from "../utils/errors";
+import {StatusCodes} from "http-status-codes";
 
 // Interface to define user information structure
 export interface IUserInfo {
@@ -34,16 +36,16 @@ export class User {
     public role!: Role;
 
     @prop({ref: User})
-    public followers?: Array<Ref<User>>;
+    public followers!: Array<Ref<User>>;
 
     @prop({ref: User})
-    public followings?: Array<Ref<User>>;
+    public followings!: Array<Ref<User>>;
 
     @prop({ref: Question})
-    public solvedQuestions?: Array<Ref<Question>>;
+    public solvedQuestions!: Array<Ref<Question>>;
 
     @prop()
-    public score?: number;
+    public score!: number;
 
     /**
      * Marks a question as solved and updates the user score.
@@ -53,13 +55,12 @@ export class User {
         if (!this.solvedQuestions)
             this.solvedQuestions = [];
         if (this.solvedQuestions.includes(questionId as any))
-            throw new Error("Question already solved");
+            throw new ConflictError("Question already solved");
         const question = await (Question as any).findById(questionId);
         if (!question)
-            throw new Error("Question not found");
-        this.solvedQuestions.push(questionId as any);
-        if (question.correct)
-            this.score = (this.score || 0) + 1;
+            throw new NotFoundError("Question not found");
+        this.score = (this.score || 0) + question.difficulty;
+        this.solvedQuestions.push(question);
     }
 
     /**

@@ -4,11 +4,6 @@ import config from "../config/config";
 import ID from "../models/ID";
 import {ForbiddenError, UnauthorizedError} from "./errors";
 
-interface IJwtPayload {
-    id: string;
-    type: string;
-}
-
 const jwtUtils = {
     // Generate an access token
     generateAccessToken(id: string): string {

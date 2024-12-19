@@ -1,23 +1,32 @@
 import Joi from "joi";
-import {IScoreboardUser} from "../../../models/User";
-
-// GetLeaderboardSchema
 
 /**
  * @swagger
  * components:
  *   schemas:
- *     GetLeaderboardSchema:
+ *     UserInfo:
  *       type: object
  *       properties:
- *         limit:
+ *         id:
+ *           $ref: '#/components/schemas/id'
+ *           description: User ID (Unique identifier)
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: User email
+ *         nickname:
+ *           type: string
+ *           description: User nickname
+ *         score:
  *           type: number
+ *           description: User score
+ *         role:
+ *           type: string
+ *           description: User role
+ *           enum:
+ *             - player
+ *             - admin
  */
-export const getLeaderboardSchema = Joi.object({
-    limit: Joi.number().default(10),
-});
-
-// IScoreboardUser
 
 /**
  * @swagger
@@ -27,8 +36,7 @@ export const getLeaderboardSchema = Joi.object({
  *       type: object
  *       properties:
  *         id:
- *           type: string
- *           format: uuid
+ *           $ref: '#/components/schemas/id'
  *           description: User ID (Unique identifier)
  *         email:
  *           type: string
@@ -52,3 +60,17 @@ export const getLeaderboardSchema = Joi.object({
  *           description: User rank
  *           example: 1
  */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     GetLeaderboardSchema:
+ *       type: object
+ *       properties:
+ *         limit:
+ *           type: number
+ */
+export const getLeaderboardSchema = Joi.object({
+    limit: Joi.number().default(10),
+});

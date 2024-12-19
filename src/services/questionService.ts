@@ -1,22 +1,15 @@
 import ID from "../models/ID";
-import {CategoryModel, QuestionModel} from "../models/Question";
-import {BadRequestError, ConflictError, NotFoundError} from "../utils/errors";
+import {CategoryModel, Difficulty, QuestionModel} from "../models/Question";
 import {User, UserModel} from "../models/User";
+import {ConflictError, NotFoundError} from "../utils/errors";
 
 export interface CreateQuestionInput {
-    questionText: string;
+    title: string;
+    text: string;
     options: string[];
     correct: number;
-    category: string;
-    difficulty: number;
-}
-
-export interface UpdateQuestionInput {
-    questionText?: string;
-    options?: string[];
-    correct?: number;
-    category?: string;
-    difficulty?: number;
+    categoryId: ID;
+    difficulty: Difficulty;
 }
 
 const questionService = {
@@ -64,37 +57,30 @@ const questionService = {
      * Create a new question under a category.
      */
     async createQuestion(input: CreateQuestionInput) {
-        const {questionText, options, correct, category, difficulty} = input;
-        const existingCategory = await CategoryModel.findById(category);
+        const {title, text, options, correct, categoryId, difficulty} = input;
+        const existingCategory = await CategoryModel.findById(categoryId);
         if (!existingCategory)
             throw new NotFoundError("Category not found");
-
-        // Create and save the question
-        return await QuestionModel.create({
-            questionText,
+        const newQuestion = await QuestionModel.create({
+            title,
+            text,
             options,
             correct,
-            category,
+            category: existingCategory,
             difficulty,
             solves: 0, // Initialize solves count
         });
+        return newQuestion.save();
     },
 
     /**
      * Retrieve all questions with optional filters.
      */
-    async getQuestions(filters: { category?: string; difficulty?: number }) {
+    async getQuestions(filters: { categoryId?: ID; difficulty?: number; limit?: number }) {
         const query: any = {};
-
-        if (filters.category) {
-            query.category = filters.category;
-        }
-
-        if (filters.difficulty) {
-            query.difficulty = filters.difficulty;
-        }
-
-        // Retrieve questions and populate the category reference
+        if (filters.categoryId) query.category = query.categoryId;
+        if (filters.difficulty) query.difficulty = filters.difficulty;
+        if (filters.limit) return QuestionModel.find(query).limit(filters.limit).populate("category");
         return QuestionModel.find(query).populate("category");
     },
 
@@ -103,42 +89,17 @@ const questionService = {
      */
     async getQuestionById(questionId: ID) {
         const question = await QuestionModel.findById(questionId).populate("category");
-        if (!question) {
-            throw new NotFoundError("Question not found");
-        }
+        if (!question) throw new NotFoundError("Question not found");
         return question;
     },
 
     /**
-     * Update a question by its ID.
+     * Delete a question by its ID.
      */
-    async updateQuestion(questionId: ID, updates: UpdateQuestionInput) {
-        const question = await QuestionModel.findById(questionId);
-        if (!question) {
-            throw new NotFoundError("Question not found");
-        }
-
-        // Validate and update category if provided
-        if (updates.category) {
-            const existingCategory = await CategoryModel.findById(updates.category);
-            if (!existingCategory) {
-                throw new NotFoundError("Category not found");
-            }
-        }
-
-        // Validate correct index if options are updated
-        if (updates.correct !== undefined) {
-            const optionsLength = updates.options?.length || question.options.length;
-            if (updates.correct < 0 || updates.correct >= optionsLength) {
-                throw new BadRequestError("Correct answer index is out of bounds");
-            }
-        }
-
-        // Update the question fields
-        Object.assign(question, updates);
-        await question.save();
-
-        return QuestionModel.findById(questionId).populate("category");
+    async deleteQuestion(questionId: ID) {
+        const question = await QuestionModel.findByIdAndDelete(questionId);
+        if (!question) throw new NotFoundError("Question not found");
+        return question;
     },
 
     /**
@@ -151,27 +112,14 @@ const questionService = {
             throw new NotFoundError("Question not found");
         if (!user)
             throw new NotFoundError("User not found");
-
         const isCorrect = question.correct === answerIndex;
-
         if (isCorrect) {
             // Increment solves if the answer is correct
             await QuestionModel.findByIdAndUpdate(questionId, {$inc: {solves: 1}});
-
             // Increment user score if the answer is correct
             await user.solveQuestion(questionId);
         }
-
-        return {correct: isCorrect};
-    },
-
-    /**
-     * Delete a question by its ID.
-     */
-    async deleteQuestion(questionId: ID) {
-        const question = await QuestionModel.findByIdAndDelete(questionId);
-        if (!question) throw new NotFoundError("Question not found");
-        return question;
+        return {isCorrect, gainedScore: question.difficulty};
     },
 };
 
