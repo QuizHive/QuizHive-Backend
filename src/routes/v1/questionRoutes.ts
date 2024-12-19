@@ -140,11 +140,14 @@ router.delete("/categories/:id", requireAuth([Right.Manage]), questionController
  *   get:
  *     tags: [Questions]
  *     summary: Get all questions
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: query
- *         name: category
+ *         name: categoryId
  *         schema:
  *           $ref: '#/components/schemas/id'
+ *         example: ""
  *         description: Category ID
  *       - in: query
  *         name: difficulty
@@ -183,6 +186,8 @@ router.get("/", mayAuth(), questionController.getQuestions);
  *   get:
  *     tags: [Questions]
  *     summary: Get a question by ID
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -364,7 +369,7 @@ router.post("/submit", requireAuth([Right.Play]), validator(createSubmitSchema),
 
 /**
  * @swagger
- * /questions/submissions:
+ * /questions/submit/submissions:
  *   get:
  *     tags: [Questions]
  *     summary:
@@ -415,6 +420,6 @@ router.post("/submit", requireAuth([Right.Play]), validator(createSubmitSchema),
  *             schema:
  *               $ref: '#/components/schemas/ServerErrorResponse'
  */
-router.get("/submissions", requireAuth([]), submitController.getSubmissions);
+router.get("/submit/submissions", requireAuth([]), submitController.getSubmissions);
 
 export default router;

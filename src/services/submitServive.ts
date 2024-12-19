@@ -27,7 +27,8 @@ const submitService = {
         });
         await UserModel.findByIdAndUpdate(userId, {$inc: {score: gainedScore}});
         await QuestionModel.findByIdAndUpdate(questionId, {$inc: {solves: isCorrect ? 1 : 0}});
-        return submitRecord.save();
+        await submitRecord.save();
+        return SubmitModel.findById(submitRecord._id);
     },
 
     /**

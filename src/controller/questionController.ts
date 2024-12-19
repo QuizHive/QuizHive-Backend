@@ -40,14 +40,17 @@ const questionController = {
     async getQuestions(req: Request, res: Response) {
         try {
             const filters = req.query;
-            const result = await questionService.getQuestions(filters);
+            logger.debug("Request: getQuestions; filters: " + JSON.stringify(filters, null, ""));
+            const result: any[] = (await questionService.getQuestions(filters)) as any;
             // If the user is logged in, get their last choice for each question
             if (req.user) {
                 const userId = (req.user as User)._id;
-                for (const question of result) {
+                for (let i = 0; i < result.length; i++) {
+                    const question = result[i];
                     const submissions = await submitService.getSubmissions({userId, questionId: question._id});
                     const lastSubmission = submissions.length ? submissions[0] : null;
-                    question.lastChoiceByUser = lastSubmission?.choice;
+                    result[i] = question.toObject();
+                    result[i].lastChoiceByUser = lastSubmission?.choice;
                 }
             }
             res.json(result);
@@ -59,12 +62,13 @@ const questionController = {
     async getQuestionById(req: Request, res: Response) {
         try {
             const {id} = req.params;
-            const result = await questionService.getQuestionById(id as any);
+            let result = await questionService.getQuestionById(id as any) as any;
             // if user is logged in, then also get the user's last choice for this question
             if (req.user) {
                 const userId = (req.user as User)._id;
                 const submissions = await submitService.getSubmissions({userId, questionId: ID.from(id as string)});
                 const lastSubmission = submissions.length ? submissions[0] : null;
+                result = result.toObject();
                 result.lastChoiceByUser = lastSubmission?.choice;
             }
             res.json(result);
