@@ -61,16 +61,6 @@ import Joi from "joi";
  *           example: 1
  */
 
-/**
- * @swagger
- * components:
- *   schemas:
- *     GetLeaderboardSchema:
- *       type: object
- *       properties:
- *         limit:
- *           type: number
- */
 export const getLeaderboardSchema = Joi.object({
     limit: Joi.number().default(10),
 });

@@ -107,13 +107,13 @@ router.get("/info/:user", userController.getUserById);
  *               type: object
  *               properties:
  *                 scoreboard:
- *                   schema:
- *                     type: array
- *                     items:
- *                       $ref: '#/components/schemas/IScoreboardUser'
- *                 userRank:
- *                   schema:
+ *                   type: array
+ *                   description: List of users in the leaderboard sorted by score
+ *                   items:
  *                     $ref: '#/components/schemas/IScoreboardUser'
+ *                 userRank:
+ *                   description: The ScoreBoard-info of current user
+ *                   $ref: '#/components/schemas/IScoreboardUser'
  *       500:
  *         description: Internal server error
  *         content:
