@@ -1,6 +1,6 @@
 import express from "express";
 import userController from "../../controller/userController";
-import requireAuth from "../../middleware/authMiddleware";
+import {requireAuth} from "../../middleware/authMiddleware";
 import validator from "../../middleware/validator";
 import {getLeaderboardSchema} from "./schemas/userSchemas";
 
