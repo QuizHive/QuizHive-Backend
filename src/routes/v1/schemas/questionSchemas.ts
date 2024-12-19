@@ -10,14 +10,14 @@ import Joi from "joi";
  *         id:
  *           $ref: '#/components/schemas/id'
  *           description: Category ID (Unique identifier)
- *         name:
+ *         categoryName:
  *           type: string
  *           description: Category name
- *           example: "General Knowledge"
+ *           example: "Geography"
  *         description:
  *           type: string
  *           description: Category description
- *           example: "General knowledge questions"
+ *           example: Questions about earth and geography, etc.
  */
 
 /**
