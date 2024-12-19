@@ -45,6 +45,12 @@ export class Question {
 
     @prop()
     public createdAt!: Date;
+
+    /* This field is used to store the last choice made by the user
+    *  so that we can show it to the user when he comes back to the question
+    * (This field is not stored in the database, it's temporary)
+    */
+    public lastChoiceByUser?: number;
 }
 
 export const QuestionModel = getModelForClass(Question);

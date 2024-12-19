@@ -96,6 +96,9 @@ export const createCategorySchema = Joi.object({
  *           type: string
  *           format: date-time
  *           description: Date and time of creation
+ *         lastChoiceByUser:
+ *           type: number
+ *           description: "Index of the last choice made by the user, if any"
  */
 
 /**

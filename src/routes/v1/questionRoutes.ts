@@ -2,7 +2,7 @@ import express from "express";
 import {Right} from "../../config/roles";
 import questionController from "../../controller/questionController";
 import submitController from "../../controller/submitController";
-import requireAuth from "../../middleware/authMiddleware";
+import {mayAuth, requireAuth} from "../../middleware/authMiddleware";
 import validator from "../../middleware/validator";
 import {
     createCategorySchema,
@@ -175,7 +175,7 @@ router.delete("/categories/:id", requireAuth([Right.Manage]), questionController
  *             schema:
  *               $ref: '#/components/schemas/ServerErrorResponse'
  */
-router.get("/", questionController.getQuestions);
+router.get("/", mayAuth(), questionController.getQuestions);
 
 /**
  * @swagger
@@ -212,7 +212,7 @@ router.get("/", questionController.getQuestions);
  *             schema:
  *               $ref: '#/components/schemas/ServerErrorResponse'
  */
-router.get("/:id", questionController.getQuestionById);
+router.get("/:id", mayAuth(), questionController.getQuestionById);
 
 /**
  * @swagger

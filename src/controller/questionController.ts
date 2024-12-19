@@ -1,6 +1,9 @@
 import {Request, Response} from "express";
 import {StatusCodes} from "http-status-codes";
+import ID from "../models/ID";
+import {User} from "../models/User";
 import questionService, {CreateQuestionInput} from "../services/questionService";
+import submitService from "../services/submitServive";
 import logger from "../utils/logger";
 
 const questionController = {
@@ -38,6 +41,15 @@ const questionController = {
         try {
             const filters = req.query;
             const result = await questionService.getQuestions(filters);
+            // If the user is logged in, get their last choice for each question
+            if (req.user) {
+                const userId = (req.user as User)._id;
+                for (const question of result) {
+                    const submissions = await submitService.getSubmissions({userId, questionId: question._id});
+                    const lastSubmission = submissions.length ? submissions[0] : null;
+                    question.lastChoiceByUser = lastSubmission?.choice;
+                }
+            }
             res.json(result);
         } catch (error: any) {
             res.status(error.status || StatusCodes.INTERNAL_SERVER_ERROR).json({message: error.message});
@@ -48,6 +60,13 @@ const questionController = {
         try {
             const {id} = req.params;
             const result = await questionService.getQuestionById(id as any);
+            // if user is logged in, then also get the user's last choice for this question
+            if (req.user) {
+                const userId = (req.user as User)._id;
+                const submissions = await submitService.getSubmissions({userId, questionId: ID.from(id as string)});
+                const lastSubmission = submissions.length ? submissions[0] : null;
+                result.lastChoiceByUser = lastSubmission?.choice;
+            }
             res.json(result);
         } catch (error: any) {
             res.status(error.status || StatusCodes.INTERNAL_SERVER_ERROR).json({message: error.message});
